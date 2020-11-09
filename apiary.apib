@@ -1,80 +1,221 @@
 FORMAT: 1A
-HOST: https://polls.apiblueprint.org/
+HOST: https://localhost:5000/
 
-# Easy Movies
+# EasyMovies API
+## User Registration [/users/register]
 
-Polls is a simple API allowing consumers to view polls and vote in them.
-
-## Questions Collection [/questions]
-
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+### Register new User [POST]
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
+            username: 'johnsmith',
+            password: 'password123',
+            name: 'John',
+            surname: 'Smith'
+        }
+        
++ Response 200 (application/json)
+        
+        {
+            sessionId: 'fdsk-jhbl-aflb-hdsj',
+        }
+        
++ Response 409
+    
+        {
+            error: 'User already exists',
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
+
+## User Login [/users/login]
+
+### Access with Credentials [POST]
+
++ Request (application/json)
+
+        {
+            username: 'johnsmith',
+            password: 'password123',
+        }
+        
++ Response 200 (application/json)
+        
+        {
+            sessionId: 'fdsk-jhbl-aflb-hdsj',
+        }
+        
++ Response 401
+    
+        {
+            error: 'Wrong Credentials',
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
+
+## Public User Data [/users/{username}]
+
+### Get Public User Data [GET]
+        
++ Response 200 (application/json)
+         
+        {
+            name: 'John',
+            surname: 'Smith',
+            reviews: [
+                {},{}...
             ]
         }
+        
++ Response 404
+    
+        {
+            error: 'User not found',
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
 
-+ Response 201 (application/json)
+## User Playlists [/users/{username}/playlists]
 
-    + Headers
+### Get User Playlists [GET]
+        
++ Response 200 (application/json)
+        
+        {
+            playlists: [
+                {},{}...
+            ]
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
 
-            Location: /questions/2
+### Create a new Playlist [POST]
+        
++ Response 200 (application/json)
+        
+        {
+            playlistName: 'watch later',
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
 
-    + Body
+## User Playlist Data [/users/{username}/playlists/{playlistId}]
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
+### Get Playlist Data [GET]
+        
++ Response 200 (application/json)
+        
+        {
+            movies: [{movie}, {movie}],
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
+
+### Delete Playlist [DELETE]
+        
++ Response 200 (application/json)
+        
+        {
+            
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
+
+## Movie Data [/movies/{movieId}]
+
+### Get Movie Data [GET]
+        
++ Response 200 (application/json)
+        
+        {
+            data varia
+            reviews:[{},{}, {}];//ne ritorno esattamente 3
+        }
+        
++ Response 404
+        
+        {
+            error: 'Movie not found',
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
+
+## Movie Reviews [/movies/{movieId}/reviews]
+
+### Get Movie Reviews [GET]
+        
++ Response 200 (application/json)
+        
+        {
+            reviews:[{},{}, {}, ...]
+        }
+        
++ Response 404
+        
+        {
+            error: 'Movie not found',
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
+        
+
+## Movies Catalog [/catalog/{catalogName}]
+
+### Get Catalog Movies List [GET]
+        
++ Response 200 (application/json)
+        
+        {
+            [{movie}, {movie}, ...]
+        }
+        
++ Response 500
+        
+        {
+            error: 'Internal Server error',
+        }
