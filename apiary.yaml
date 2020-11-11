@@ -123,6 +123,30 @@ paths:
       summary: Get Playlist Data
       operationId: Get Playlist Data
       description: ""
+    post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - movieId
+              properties:
+                movieId:
+                  type: string
+      responses:
+        "201":
+          description: OK
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get Playlist Data
+      operationId: Get Playlist Data
+      description: ""
     delete:
       responses:
         "200":
@@ -137,7 +161,7 @@ paths:
       summary: Delete Playlist
       operationId: Delete Playlist
       description: ""
-  /users/{userId}/reviews:
+  /users/{username}/reviews:
     get:
       responses:
         "200":
@@ -157,7 +181,7 @@ paths:
       summary: Get User Reviews
       operationId: Get User Reviews
       description: ""
-  /users/{userId}/profilepic:
+  /users/{username}/profilepic:
     get:
       responses:
         "200":
