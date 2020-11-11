@@ -1,0 +1,337 @@
+openapi: 3.0.0
+info:
+  title: EasyMovies API
+  version: ""
+  description: ""
+paths:
+  /users/register:
+    post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              #$ref: '#/components/schemas/UserCredentials'
+              $ref: '#/components/schemas/UserData'
+      responses:
+        "201":
+          description: Created
+          headers: {}
+        "409":
+          description: Conflict
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Register new User
+      operationId: Register new User
+      description: ""
+  /users/login:
+    post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        "200":
+          description: OK
+          headers: {}
+        "401":
+          description: Unauthorized
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Access with Credentials
+      operationId: Access with Credentials
+      description: ""
+  /users/{username}:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserData'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get Public User Data
+      operationId: Get Public User Data
+      description: ""
+  /users/{username}/playlists:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Playlist'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get User Playlists
+      operationId: Get User Playlists
+      description: ""
+    post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Playlist'
+      responses:
+        "201":
+          description: Created
+          headers: {}
+        "400":
+          description: Bad Request
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Create a new Playlist
+      operationId: Create a new Playlist
+      description: ""
+  /users/{username}/playlists/{playlistId}:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Playlist'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get Playlist Data
+      operationId: Get Playlist Data
+      description: ""
+    delete:
+      responses:
+        "200":
+          description: OK
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Delete Playlist
+      operationId: Delete Playlist
+      description: ""
+  /users/{userId}/reviews:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get User Reviews
+      operationId: Get User Reviews
+      description: ""
+  /users/{userId}/profilepic:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get User Profile Picture
+      operationId: Get User Profile Picture
+      description: ""
+  /movies/{movieId}:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Movie'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get Movie Data
+      operationId: Get Movie Data
+      description: ""
+  /movies/{movieId}/reviews:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get Movie Reviews
+      operationId: Get Movie Reviews
+      description: ""
+    post:
+      responses:
+        "201":
+          description: Resource Created
+          headers: {}
+        "400":
+          description: Bad Request
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Add Movie Review
+      operationId: Add Movie Review
+      description: ""
+  /movies/{movieId}/reviews/{reviewID}:
+    delete:
+      responses:
+        "200":
+          description: OK
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Delete Movie Review
+      operationId: Delete Movie Review
+      description: ""
+    patch:
+      responses:
+        "200":
+          description: OK
+          headers: {}
+        "400":
+          description: Bad Request
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Modify Movie Review
+      operationId: Modify Movie Review
+      description: ""
+  /catalog/{catalogName}:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get Catalog Movies List
+      operationId: Get Catalog Movies List
+      description: ""
+servers:
+  - url: https://localhost:5000/
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: 
+          type: string
+    UserCredentials:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    UserData:
+      type: object
+      required:
+      - name
+      - surname
+      - username
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        username:
+          type: string
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        overview:
+          type: string
+        trailerUrl:
+          type: string
+        duration:
+          type: string
+        releaseDate:
+          type: string
+        genre:
+          type: string
+    Review:
+      type: object
+    Playlist:
+      type: object
