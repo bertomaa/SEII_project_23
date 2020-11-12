@@ -33,7 +33,20 @@ loginUser = async (req, res) => {
   const password = req.query.password;
   const hashedPw = sha256(password).toString();
   const logged = await adapterCheckUserCredentials(username, hashedPw);
-  logged ? res.status(200).send() : res.status(401).send();
+  logged ? res.status(200).writeHead(200, {
+      "Set-Cookie": "sessionId=giusto; HttpOnly",
+      "Access-Control-Allow-Credentials": "true"
+    }).send() : res.status(401).send();
+}
+
+
+logoutUser = async (req, res) => {
+  const username = req.query.username;
+  //TODO: delete from database
+  logged ? res.status(200).writeHead(200, {
+      "Set-Cookie": "",
+      "Access-Control-Allow-Credentials": "true"
+    }).send() : res.status(401).send();
 }
 
 getUserProfilePic = (req, res) => {
@@ -110,5 +123,6 @@ module.exports = {
   removeMovieFromPlaylist,
   createPlaylist,
   deletePlaylist,
-  editPlaylistName
+  editPlaylistName,
+  logoutUser
 }

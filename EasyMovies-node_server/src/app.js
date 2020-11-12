@@ -4,14 +4,34 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const users = require('./users.js');
 const movies = require('./movies.js');
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+var router = express.Router();
+
+
 
 console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+router.use(function(req, res, next) {
+    console.log(req.cookies)
+    if (req.cookies && req.cookies.sessionId) {
+        console.log("ci sono i cookie")
+        if (req.cookies.sessionId === "giusto") {
+            next('route');
+        }
+    } else {
+        console.log("non ci sono i cookie")
+        res.status(401).send();
+    }
+});
+
+app.use("/users/:username/:all", router);
+
 app.get('/', (req, res) => {
-    res.send("live");
+    res.send('home page');
 });
 
 //User Register
@@ -19,6 +39,9 @@ app.post('/users/register', users.registerUser);
 
 //User Login
 app.post('/users/login', users.loginUser);
+
+//User Logout
+app.post('/users/:username/logout', users.logoutUser);
 
 //Send user profile picture
 app.get('/users/:username/profilepic', users.getUserProfilePic);
