@@ -7,11 +7,17 @@ paths:
   /users/register:
     post:
       requestBody:
+        required: true
         content:
           'application/json':
             schema:
-              #$ref: '#/components/schemas/UserCredentials'
-              $ref: '#/components/schemas/UserData'
+              allOf:
+                - $ref: '#/components/schemas/UserCredentials'
+                - $ref: '#/components/schemas/UserData'
+                - $ref: '#/components/requestBodies/Image'
+          image/jpeg:
+            schema:
+              type: string
       responses:
         "201":
           description: Created
@@ -36,6 +42,9 @@ paths:
         "200":
           description: OK
           headers: {}
+        "400":
+          description: Bad Request
+          headers: {}
         "401":
           description: Unauthorized
           headers: {}
@@ -44,6 +53,21 @@ paths:
           headers: {}
       summary: Access with Credentials
       operationId: Access with Credentials
+      description: ""
+  /users/{username}/logout:
+    post:
+      responses:
+        "200":
+          description: OK
+          headers: {}
+        "400":
+          description: Bad Request
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Log out and delete session
+      operationId: Log out and delete session
       description: ""
   /users/{username}:
     get:
@@ -62,6 +86,44 @@ paths:
           headers: {}
       summary: Get Public User Data
       operationId: Get Public User Data
+      description: ""
+  /users/{username}/profilepic:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get User Profile Picture
+      operationId: Get User Profile Picture
+      description: ""
+  /users/{username}/reviews:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        "404":
+          description: Not Found
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Get User Reviews
+      operationId: Get User Reviews
       description: ""
   /users/{username}/playlists:
     get:
@@ -105,24 +167,34 @@ paths:
       summary: Create a new Playlist
       operationId: Create a new Playlist
       description: ""
-  /users/{username}/playlists/{playlistId}:
-    get:
+    delete:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - playlistId
+              properties:
+                playlistId:
+                  type: string
       responses:
         "200":
           description: OK
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/Playlist'
+          headers: {}
+        "401":
+          description: Unauthorized
+          headers: {}
         "404":
           description: Not Found
           headers: {}
         "500":
           description: Internal Server Error
           headers: {}
-      summary: Get Playlist Data
-      operationId: Get Playlist Data
+      summary: Delete Playlist
+      operationId: Delete Playlist
       description: ""
+  /users/{username}/playlists/{playlistId}:
     post:
       requestBody:
         content:
@@ -141,13 +213,53 @@ paths:
         "404":
           description: Not Found
           headers: {}
+        "401":
+          description: Unauthorized
+          headers: {}
         "500":
           description: Internal Server Error
           headers: {}
-      summary: Get Playlist Data
-      operationId: Get Playlist Data
+      summary: Add movie to playlist
+      operationId: Add movie to playlist
+      description: ""
+    patch:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - newname
+              properties:
+                newname:
+                  type: string
+      responses:
+        "201":
+          description: OK
+          headers: {}
+        "404":
+          description: Not Found
+          headers: {}
+        "401":
+          description: Unauthorized
+          headers: {}
+        "500":
+          description: Internal Server Error
+          headers: {}
+      summary: Edit playlist name
+      operationId: Edit playlist name
       description: ""
     delete:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - movieId
+              properties:
+                movieId:
+                  type: string
       responses:
         "200":
           description: OK
@@ -158,46 +270,8 @@ paths:
         "500":
           description: Internal Server Error
           headers: {}
-      summary: Delete Playlist
-      operationId: Delete Playlist
-      description: ""
-  /users/{username}/reviews:
-    get:
-      responses:
-        "200":
-          description: OK
-          content:
-            'application/json':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Review'
-        "404":
-          description: Not Found
-          headers: {}
-        "500":
-          description: Internal Server Error
-          headers: {}
-      summary: Get User Reviews
-      operationId: Get User Reviews
-      description: ""
-  /users/{username}/profilepic:
-    get:
-      responses:
-        "200":
-          description: OK
-          content:
-            image/jpeg:
-              schema:
-                type: string
-        "404":
-          description: Not Found
-          headers: {}
-        "500":
-          description: Internal Server Error
-          headers: {}
-      summary: Get User Profile Picture
-      operationId: Get User Profile Picture
+      summary: Remove movie from playlist
+      operationId: Remove movie from playlist
       description: ""
   /movies/{movieId}:
     get:
@@ -240,7 +314,7 @@ paths:
     post:
       responses:
         "201":
-          description: Resource Created
+          description: Review Created
           headers: {}
         "400":
           description: Bad Request
@@ -260,6 +334,9 @@ paths:
         "200":
           description: OK
           headers: {}
+        "401":
+          description: Unauthorized
+          headers: {}
         "404":
           description: Not Found
           headers: {}
@@ -274,8 +351,8 @@ paths:
         "200":
           description: OK
           headers: {}
-        "400":
-          description: Bad Request
+        "401":
+          description: Unauthorized
           headers: {}
         "404":
           description: Not Found
@@ -357,5 +434,39 @@ components:
           type: string
     Review:
       type: object
+      required:
+      - movieId
+      - username
+      - title
+      - content
+      - rate
+      properties:
+        movieId:
+          type: integer
+        uername:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        rate:
+          type: number
+          format: float
     Playlist:
       type: object
+      properties:
+        uername:
+          type: string
+        name:
+          type: string
+        movies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Movie'
+  requestBodies:
+    Image:
+      description: An image.
+      content:
+        image/jpg:
+          schema:
+            type: string
