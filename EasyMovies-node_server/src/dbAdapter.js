@@ -44,12 +44,11 @@ async function insertQuery(collection, toInsert, resolve, reject, one) {
         return await dbo.collection(collection).insertMany(toInsert, (queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
 }
 
-async function deleteQuery(collection, toInsert, resolve, reject, one) {
+async function deleteQuery(collection, toDelete, resolve, reject, one) {
     if (one)
-        return await dbo.collection(collection).deleteOne(toInsert, (queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
+        return await dbo.collection(collection).deleteOne(toDelete, (queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
     else
-        return await dbo.collection(collection).deleteMany(toInsert, (queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
-    
+        return await dbo.collection(collection).deleteMany(toDelete, (queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
 }
 
 
@@ -57,6 +56,29 @@ async function deleteQuery(collection, toInsert, resolve, reject, one) {
 // USERS
 //#####################################################
 
+readQueryWrapper = async (collection, query, onlyFirst) => {
+    return new Promise((resolve, reject) => {
+        readQuery(collection, query, resolve, reject, onlyFirst)
+    });
+}
+
+updateQueryWrapper = async (collection, obj, toAdd, onlyFirst) => {
+    return new Promise((resolve, reject) => {
+        updateQuery(collection, obj, toAdd, resolve, reject, onlyFirst)
+    });
+}
+
+insertQueryWrapper = async (collection, toInsert, onlyFirst) => {
+    return new Promise((resolve, reject) => {
+        insertQuery(collection, toInsert, resolve, reject, onlyFirst)
+    });
+}
+
+deleteQueryWrapper = async (collection, toDelete, onlyFirst) => {
+    return new Promise((resolve, reject) => {
+        deleteQuery(collection, toDelete, resolve, reject, onlyFirst)
+    });
+}
 
 adapterCheckUserCredentials = async (username, password) => {
     return new Promise((resolve, reject) => {

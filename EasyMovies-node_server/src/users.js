@@ -2,30 +2,35 @@ const fileUpload = require('express-fileupload');
 const sha256 = require('crypto-js/sha256');
 const { MongoError } = require('mongodb');
 const dbAdapter = require('./dbAdapter');
+const dataChecker = require('./dataChecker');
 
 registerUser = async (req, res) => {
-  if (process.env.NODE_ENV === "production") {//si cambia nello start di package.json
-    if (!req.files || !req.files.img) {
-      return res.status(401).send();
+    if (process.env.NODE_ENV === "production") {//si cambia nello start di package.json
+      if (!req.files || !req.files.img) {
+        throw new BadRequestException();
+      }
+      req.files.img.mv(`./resources/profile_imgs/${req.query.username}.jpg`, function (err) {
+        if (err)
+          throw new InternalServerErrorException();
+      });
     }
-    req.files.img.mv(`./resources/profile_imgs/${req.query.username}.jpg`, function (err) {
-      if (err)
-        return res.status(500).send(err);
-    });
-  }
-  const username = req.query.username;
-  const password = req.query.password;
-  const name = req.query.name;
-  const surname = req.query.surname;
-  const hashedPw = sha256(password).toString();
-  const user = {
-    "username": username,
-    "password-hash": hashedPw,
-    "name": name,
-    "surname": surname
-  }
-  const created = await adapterCreateUser(user).catch(e => console.log("user already exists"));
-  created ? res.status(201).send() : res.status(401).send();
+
+    const username = req.query.username;
+
+    dataChecker.checkUsername(username).catch(() => res.status(500).send());
+
+    const password = req.query.password;
+    const name = req.query.name;
+    const surname = req.query.surname;
+    const hashedPw = sha256(password).toString();
+    const user = {
+      "username": username,
+      "password-hash": hashedPw,
+      "name": name,
+      "surname": surname
+    }
+    const created = await adapterCreateUser(user).catch(e => console.log("user already exists"));
+    created ? res.status(201).send() : res.status(401).send();
 }
 
 loginUser = async (req, res) => {
