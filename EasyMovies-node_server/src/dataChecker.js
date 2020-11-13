@@ -1,26 +1,36 @@
 const dbAdapter = require('./dbAdapter.js')
 
-checkNotNull = (data) => {
+checkNull = (data) => {
     if (!data || data === '')
-        return false;
-    return true;
+        return true;
+    return false;
+}
+
+checkFieldsNull = (fieldsList) => {
+    for(let f of fieldsList){
+        if(checkNull(f))
+            return true;
+    }
+    return false;
 }
 
 existsDBField = async (collection, field, value) => {
     let query = {};
     query[field] = value;
-    dbAdapter.readQueryWrapper(collection, query, true).then((res) => {
+    let promise =  dbAdapter.readQueryWrapper(collection, query, true).then((res) => {
         return res ? true: false;
     }).catch(() => {
         throw new InternalServerErrorException();
     })
+    let res = await promise;
+    return res;
 }
 
 checkUsername = async (username) => {
-    if(!checkNotNull(username))
-        return false;
     return await existsDBField('Users', 'username', username);
 }
+
+
 
 
 //#####################################################
@@ -30,3 +40,11 @@ checkUsername = async (username) => {
 adapterWrapper = async (foo, res, successCode, errorCode) => {
     foo().then(()=>res.status(successCode).send()).catch(()=>res.status(errorCode).send())
 };
+
+module.exports = {
+    checkNull,
+    checkFieldsNull,
+    existsDBField,
+    checkUsername,
+    adapterWrapper
+}

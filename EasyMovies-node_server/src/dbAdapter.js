@@ -56,25 +56,25 @@ async function deleteQuery(collection, toDelete, resolve, reject, one) {
 // USERS
 //#####################################################
 
-readQueryWrapper = async (collection, query, onlyFirst) => {
+const readQueryWrapper = async (collection, query, onlyFirst) => {
     return new Promise((resolve, reject) => {
         readQuery(collection, query, resolve, reject, onlyFirst)
     });
 }
 
-updateQueryWrapper = async (collection, obj, toAdd, onlyFirst) => {
+const updateQueryWrapper = async (collection, obj, toAdd, onlyFirst) => {
     return new Promise((resolve, reject) => {
         updateQuery(collection, obj, toAdd, resolve, reject, onlyFirst)
     });
 }
 
-insertQueryWrapper = async (collection, toInsert, onlyFirst) => {
+const insertQueryWrapper = async (collection, toInsert, onlyFirst) => {
     return new Promise((resolve, reject) => {
         insertQuery(collection, toInsert, resolve, reject, onlyFirst)
     });
 }
 
-deleteQueryWrapper = async (collection, toDelete, onlyFirst) => {
+const deleteQueryWrapper = async (collection, toDelete, onlyFirst) => {
     return new Promise((resolve, reject) => {
         deleteQuery(collection, toDelete, resolve, reject, onlyFirst)
     });
@@ -229,3 +229,10 @@ adapterDeleteReview = async (username, movieId) => {
         }, resolve, reject, true)
     });
 };
+
+module.exports = {
+    readQueryWrapper,
+    updateQueryWrapper,
+    deleteQueryWrapper,
+    insertQueryWrapper
+}

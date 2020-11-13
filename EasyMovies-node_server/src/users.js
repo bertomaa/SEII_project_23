@@ -3,25 +3,29 @@ const sha256 = require('crypto-js/sha256');
 const { MongoError } = require('mongodb');
 const dbAdapter = require('./dbAdapter');
 const dataChecker = require('./dataChecker');
+const exceptionHandler = require('./exceptionHandler');
+const { NotFoundException } = require('./exceptionHandler');
 
 registerUser = async (req, res) => {
     if (process.env.NODE_ENV === "production") {//si cambia nello start di package.json
       if (!req.files || !req.files.img) {
-        throw new BadRequestException();
+        throw new exceptionHandler.BadRequestException();
       }
-      req.files.img.mv(`./resources/profile_imgs/${req.query.username}.jpg`, function (err) {
+      req.files.img.mv(`./resources/profile_imgs/${req.body.username}.jpg`, function (err) {
         if (err)
-          throw new InternalServerErrorException();
+          throw new exceptionHandler.InternalServerErrorException();
       });
     }
 
-    const username = req.query.username;
-
-    dataChecker.checkUsername(username).catch(() => res.status(500).send());
-
-    const password = req.query.password;
-    const name = req.query.name;
-    const surname = req.query.surname;
+    const username = req.body.username;
+    const password = req.body.password;
+    const name = req.body.name;
+    const surname = req.body.surname;
+    console.log(req.body);
+    if(dataChecker.checkFieldsNull([username, password, name, surname]))
+      throw new exceptionHandler.BadRequestException();
+    if(await dataChecker.checkUsername(username))
+      throw new exceptionHandler.ConflictException();
     const hashedPw = sha256(password).toString();
     const user = {
       "username": username,
@@ -29,16 +33,24 @@ registerUser = async (req, res) => {
       "name": name,
       "surname": surname
     }
-    const created = await adapterCreateUser(user).catch(e => console.log("user already exists"));
-    created ? res.status(201).send() : res.status(401).send();
+    const created = await adapterCreateUser(user).catch(e => console.log("Error: user already exists"));
+    if(!created)
+      throw new exceptionHandler.InternalServerErrorException();
+    res.status(201).send();
 }
 
 loginUser = async (req, res) => {
-  const username = req.query.username;
-  const password = req.query.password;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if(dataChecker.checkFieldsNull([username, password]))
+    throw new exceptionHandler.BadRequestException();
   const hashedPw = sha256(password).toString();
   const logged = await adapterCheckUserCredentials(username, hashedPw);
-  logged ? res.status(200).send() : res.status(401).send();
+  if(logged) 
+    res.status(200).send()
+  else
+    throw new exceptionHandler.UnauthorizedException();
 }
 
 getUserProfilePic = (req, res) => {
@@ -49,7 +61,9 @@ getUserDetails = async (req, res) => {
   const username = req.params.username;
   const details = await adapterGetUserDetails(username);
   delete details['password-hash'];
-  details ? res.status(200).send(details) : res.status(404).send();
+  if(details) 
+    res.status(200).send(details);
+  throw new exceptionHandler.NotFoundException();
 }
 
 getPlaylists = async (req, res) => {
@@ -57,7 +71,8 @@ getPlaylists = async (req, res) => {
   let ret = [];
   const playlists = await adapterGetPlaylists(username);
 
-  !playlists ? res.status(404).send() : null;
+  if(!playlists)
+    throw new NotFoundException();
   // console.log(playlists);
   let i = 0
   for await (let p of playlists) {

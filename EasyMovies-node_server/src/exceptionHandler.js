@@ -11,9 +11,7 @@ function InternalServerErrorException() {}
 
 //funzione che fa da wrapper a tutti gli handler
 const exceptionWrapper = (foo, req, res) => {
-    try{
-        foo(req,res);
-    }catch(e){
+     foo(req,res).catch((e)=>{
         if(e instanceof BadRequestException)
             res.status(400).send();
         else if(e instanceof UnauthorizedException)
@@ -24,5 +22,15 @@ const exceptionWrapper = (foo, req, res) => {
             res.status(409).send();
         else if(e instanceof InternalServerErrorException)
             res.status(500).send();
-    }
+        });
+    
+}
+
+module.exports = {
+    BadRequestException,
+    UnauthorizedException,
+    NotFoundException,
+    ConflictException,
+    InternalServerErrorException,
+    exceptionWrapper
 }
