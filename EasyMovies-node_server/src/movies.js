@@ -1,60 +1,77 @@
-var MongoClient = require('mongodb').MongoClient;
-
-var url = "mongodb://localhost:27017/";
-let dbo;
-MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    dbo = db.db("easyMovies");
-});
+const dataChecker = require('./dataChecker');
+const { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } = require('./exceptionHandler');
 
 getMovieData = async (req, res) => {
     const movieId = req.params.movieId;
+    if(dataChecker.checkFieldsNull([movieId]))
+        throw new BadRequestException();
+    if(! await dataChecker.existsDBField("Movies", "imdb_title_id", movieId))
+        throw new NotFoundException();
     let ret = await adapterGetMovieDetails(movieId);
-    res.send(ret)
+    res.status(200).send(ret);
 }
 
 getMovieReviews = async (req, res) => {
     const movieId = req.params.movieId;
+    if(dataChecker.checkFieldsNull([movieId]))
+        throw new BadRequestException();
+    if(! await dataChecker.existsDBField("Movies", "imdb_title_id", movieId))
+        throw new NotFoundException();
     let ret = await adapterGetMovieReviews(movieId);
-    res.send(ret)
+    res.status(200).send(ret)
 }
 
 updateMovieReview = async (req, res) => {
     const movieId = req.params.movieId;
-    const username = req.query.username;
-    const title = req.query.title;
-    const content = req.query.content;
-    const rate = req.query.rate;
+    const username = req.body.username;
+    const title = req.body.title;
+    const content = req.body.content;
+    const rate = req.body.rate;
+    if(dataChecker.checkFieldsNull([movieId, username, title, content, rate]))
+        throw new BadRequestException();
+    if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+        throw new NotFoundException();
     let review = {
-        "movieId": req.params.movieId,
-        "username": req.query.username,
-        "title": req.query.title,
-        "content": req.query.content,
-        "rate": req.query.rate,
+        "movieId": movieId,
+        "username": username,
+        "title": title,
+        "content": content,
+        "rate": rate,
     }
-    adapterUpdateReview(review);
+    let ret = await adapterUpdateReview(review);
+    res.status(200).send(ret);
 }
 
 createMovieReview = async (req, res) => {
     const movieId = req.params.movieId;
-    const username = req.query.username;
-    const title = req.query.title;
-    const content = req.query.content;
-    const rate = req.query.rate;
+    const username = req.body.username;
+    const title = req.body.title;
+    const content = req.body.content;
+    const rate = req.body.rate;
+    if(dataChecker.checkFieldsNull([movieId, username, title, content, rate]))
+        throw new BadRequestException();
+    if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+        throw new NotFoundException();
     let review = {
-        "movieId": req.params.movieId,
-        "username": req.query.username,
-        "title": req.query.title,
-        "content": req.query.content,
-        "rate": req.query.rate,
+        "movieId": movieId,
+        "username": username,
+        "title": title,
+        "content": content,
+        "rate": rate,
     }
-    adapterCreateReview(review);
+    let ret = await adapterCreateReview(review);
+    res.status(201).send(ret);
 }
 
 deleteMovieReview = async (req, res) => {
     const movieId = req.params.movieId;
     const username = req.query.username;
-    adapterDeleteReview(username, movieId);
+    if(dataChecker.checkFieldsNull([movieId, username]))
+        throw new BadRequestException();
+    if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+        throw new NotFoundException();
+        let ret = await adapterDeleteReview(review);
+        res.status(201).send(ret)
 }
 
 module.exports = {

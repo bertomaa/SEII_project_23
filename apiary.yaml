@@ -7,27 +7,31 @@ paths:
   /users/register:
     post:
       requestBody:
+        required: true
         content:
           'application/json':
             schema:
-              #$ref: '#/components/schemas/UserCredentials'
-              $ref: '#/components/schemas/UserData'
+              allOf:
+                - $ref: '#/components/schemas/UserCredentials'
+                - $ref: '#/components/schemas/UserData'
+                - $ref: '#/components/requestBodies/Image'
+          image/jpeg:
+            schema:
+              type: string
       responses:
         "201":
           description: Created
-          headers: {}
         "409":
           description: Conflict
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Register new User
       operationId: Register new User
       description: ""
   /users/login:
     post:
       requestBody:
+        required: true
         content:
           'application/json':
             schema:
@@ -35,15 +39,26 @@ paths:
       responses:
         "200":
           description: OK
-          headers: {}
+        "400":
+          description: Bad Request
         "401":
           description: Unauthorized
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Access with Credentials
       operationId: Access with Credentials
+      description: ""
+  /users/{username}/logout:
+    post:
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Log out and delete session
+      operationId: Log out and delete session
       description: ""
   /users/{username}:
     get:
@@ -56,110 +71,26 @@ paths:
                 $ref: '#/components/schemas/UserData'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Public User Data
       operationId: Get Public User Data
       description: ""
-  /users/{username}/playlists:
+  /users/{username}/profilepic:
     get:
       responses:
         "200":
           description: OK
           content:
-            'application/json':
+            image/jpeg:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Playlist'
+                type: string
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
-      summary: Get User Playlists
-      operationId: Get User Playlists
-      description: ""
-    post:
-      requestBody:
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/Playlist'
-      responses:
-        "201":
-          description: Created
-          headers: {}
-        "400":
-          description: Bad Request
-          headers: {}
-        "404":
-          description: Not Found
-          headers: {}
-        "500":
-          description: Internal Server Error
-          headers: {}
-      summary: Create a new Playlist
-      operationId: Create a new Playlist
-      description: ""
-  /users/{username}/playlists/{playlistId}:
-    get:
-      responses:
-        "200":
-          description: OK
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/Playlist'
-        "404":
-          description: Not Found
-          headers: {}
-        "500":
-          description: Internal Server Error
-          headers: {}
-      summary: Get Playlist Data
-      operationId: Get Playlist Data
-      description: ""
-    post:
-      requestBody:
-        content:
-          'application/json':
-            schema:
-              type: object
-              required:
-                - movieId
-              properties:
-                movieId:
-                  type: string
-      responses:
-        "201":
-          description: OK
-          headers: {}
-        "404":
-          description: Not Found
-          headers: {}
-        "500":
-          description: Internal Server Error
-          headers: {}
-      summary: Get Playlist Data
-      operationId: Get Playlist Data
-      description: ""
-    delete:
-      responses:
-        "200":
-          description: OK
-          headers: {}
-        "404":
-          description: Not Found
-          headers: {}
-        "500":
-          description: Internal Server Error
-          headers: {}
-      summary: Delete Playlist
-      operationId: Delete Playlist
+      summary: Get User Profile Picture
+      operationId: Get User Profile Picture
       description: ""
   /users/{username}/reviews:
     get:
@@ -174,30 +105,141 @@ paths:
                   $ref: '#/components/schemas/Review'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get User Reviews
       operationId: Get User Reviews
       description: ""
-  /users/{username}/profilepic:
+  /users/{username}/playlists:
     get:
       responses:
         "200":
           description: OK
           content:
-            image/jpeg:
+            'application/json':
               schema:
-                type: string
+                type: array
+                items:
+                  $ref: '#/components/schemas/Playlist'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
-      summary: Get User Profile Picture
-      operationId: Get User Profile Picture
+      summary: Get User Playlists
+      operationId: Get User Playlists
+      description: ""
+    post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Playlist'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create a new Playlist
+      operationId: Create a new Playlist
+      description: ""
+    delete:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - playlistId
+              properties:
+                playlistId:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete Playlist
+      operationId: Delete Playlist
+      description: ""
+  /users/{username}/playlists/{playlistId}:
+    post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - movieId
+              properties:
+                movieId:
+                  type: string
+      responses:
+        "201":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Add movie to playlist
+      operationId: Add movie to playlist
+      description: ""
+    patch:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - newname
+              properties:
+                newname:
+                  type: string
+      responses:
+        "201":
+          description: OK
+        "404":
+          description: Not Found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Edit playlist name
+      operationId: Edit playlist name
+      description: ""
+    delete:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - movieId
+              properties:
+                movieId:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Remove movie from playlist
+      operationId: Remove movie from playlist
       description: ""
   /movies/{movieId}:
     get:
@@ -210,10 +252,8 @@ paths:
                 $ref: '#/components/schemas/Movie'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Movie Data
       operationId: Get Movie Data
       description: ""
@@ -230,59 +270,70 @@ paths:
                   $ref: '#/components/schemas/Review'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Movie Reviews
       operationId: Get Movie Reviews
       description: ""
     post:
       responses:
         "201":
-          description: Resource Created
-          headers: {}
+          description: Review Created
         "400":
           description: Bad Request
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Add Movie Review
       operationId: Add Movie Review
       description: ""
-  /movies/{movieId}/reviews/{reviewID}:
     delete:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - movieId
+                - username
+              properties:
+                movieId:
+                  type: string
+                username:
+                  type: string
       responses:
         "200":
           description: OK
-          headers: {}
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Delete Movie Review
       operationId: Delete Movie Review
       description: ""
     patch:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - newreview
+              properties:
+                newreview:
+                  $ref: '#/components/schemas/Review'
       responses:
         "200":
           description: OK
-          headers: {}
-        "400":
-          description: Bad Request
-          headers: {}
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Modify Movie Review
       operationId: Modify Movie Review
       description: ""
@@ -299,10 +350,8 @@ paths:
                   $ref: '#/components/schemas/Movie'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Catalog Movies List
       operationId: Get Catalog Movies List
       description: ""
@@ -357,5 +406,39 @@ components:
           type: string
     Review:
       type: object
+      required:
+      - movieId
+      - username
+      - title
+      - content
+      - rate
+      properties:
+        movieId:
+          type: integer
+        uername:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        rate:
+          type: number
+          format: float
     Playlist:
       type: object
+      properties:
+        uername:
+          type: string
+        name:
+          type: string
+        movies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Movie'
+  requestBodies:
+    Image:
+      description: An image.
+      content:
+        image/jpg:
+          schema:
+            type: string
