@@ -1,8 +1,9 @@
+const exceptionHandler = require('./exceptionHandler');
+
 var MongoClient = require('mongodb').MongoClient;
 
-
-
 var url = "mongodb://localhost:27017/";
+
 let dbo;
 MongoClient.connect(url, function (err, db) {
     if (err) throw err;
@@ -51,56 +52,53 @@ async function deleteQuery(collection, toDelete, resolve, reject, one) {
         return await dbo.collection(collection).deleteMany(toDelete, (queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
 }
 
-
-//#####################################################
-// USERS
-//#####################################################
+//
 
 const readQueryWrapper = async (collection, query, onlyFirst) => {
     return new Promise((resolve, reject) => {
         readQuery(collection, query, resolve, reject, onlyFirst)
-    });
+    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
 }
 
 const updateQueryWrapper = async (collection, obj, toAdd, onlyFirst) => {
     return new Promise((resolve, reject) => {
         updateQuery(collection, obj, toAdd, resolve, reject, onlyFirst)
-    });
+    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
 }
 
 const insertQueryWrapper = async (collection, toInsert, onlyFirst) => {
     return new Promise((resolve, reject) => {
         insertQuery(collection, toInsert, resolve, reject, onlyFirst)
-    });
+    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
 }
 
 const deleteQueryWrapper = async (collection, toDelete, onlyFirst) => {
     return new Promise((resolve, reject) => {
         deleteQuery(collection, toDelete, resolve, reject, onlyFirst)
-    });
+    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
 }
 
+
+//#####################################################
+// USERS
+//#####################################################
+
+
 adapterCheckUserCredentials = async (username, password) => {
-    return new Promise((resolve, reject) => {
-        readQuery("Users", {
-            "username": username,
-            "password-hash": password
-        }, resolve, reject, true)
-    });
+    return await readQueryWrapper("Users", {
+        "username": username,
+        "password-hash": password
+    }, true);
 }
 
 adapterCreateUser = async (user) => {
-    return new Promise((resolve, reject) => {
-        insertQuery("Users", user, resolve, reject, true)
-    });
+    return await insertQueryWrapper("Users", user, true);;
 }
 
 adapterGetUserDetails = async (username) => {
-    return new Promise((resolve, reject) => {
-        readQuery("Users", {
-            "username": username,
-        }, resolve, reject, true)
-    });
+    return await readQueryWrapper("Users", {
+        "username": username,
+    }, true);
 }
 
 
@@ -111,69 +109,57 @@ adapterGetUserDetails = async (username) => {
 
 
 adapterGetPlaylists = async (username) => {
-    return new Promise((resolve, reject) => {
-        readQuery("Playlists", {
-            "username": username,
-        }, resolve, reject);
+    return await readQueryWrapper("Playlists", {
+        "username": username,
     });
 }
 
 adapterAddMovieToPlaylist = async (user, playlistName, movieToAdd) => {
-    return new Promise((resolve, reject) => {
-        updateQuery("Playlists", {
-            "username": user,
-            "name": playlistName
-        }, {
-            $push: {
-                "movies": movieToAdd
-            }
-        }, resolve, reject, true)
-    });
+    return await updateQueryWrapper("Playlists", {
+        "username": user,
+        "name": playlistName
+    }, {
+        $push: {
+            "movies": movieToAdd
+        }
+    }, true)
 }
 
 adapterRemoveMovieFromPlaylist = async (user, playlistName, movieToAdd) => {
-    return new Promise((resolve, reject) => {
-        updateQuery("Playlists", {
-            "username": user,
-            "name": playlistName
-        }, {
-            $pull: {
-                "movies": movieToAdd
-            }
-        }, resolve, reject, true)
-    });
+    return await updateQueryWrapper("Playlists", {
+        "username": user,
+        "name": playlistName
+    }, {
+        $pull: {
+            "movies": movieToAdd
+        }
+    }, true)
 }
 
 adapterCreatePlaylist = async (user, playlistName) => {
-    return new Promise((resolve, reject) => {
-        insertQuery("Playlists", {
-            "username": user,
-            "name": playlistName,
-            "movies": []
-        }, resolve, reject, true)
-    });
+    return await insertQueryWrapper("Playlists", {
+        "username": user,
+        "name": playlistName,
+        "movies": []
+    }, true)
 }
 
 adapterDeletePlaylist = async (user, playlistName) => {
-    return new Promise((resolve, reject) => {
-        deleteQuery("Playlists", {
-            "username": user,
-            "name": playlistName
-        }, resolve, reject, true)
-    });
+    return await deleteQueryWrapper("Playlists", {
+        "username": user,
+        "name": playlistName
+    }, true)
 }
 
 adapterEditPlaylistName = async (username, oldName, newName) => {
-    return new Promise((resolve, reject) => {
-        updateQuery("Playlists", {
-            "name": oldName,
-            "username": username
-        },{
-            $set:{
-                "name": newName,
-            }
-        }, resolve, reject, true)
-    });
+    return await updateQueryWrapper("Playlists", {
+        "name": oldName,
+        "username": username
+    }, {
+        $set: {
+            "name": newName,
+        }
+    }, true)
 }
 
 
@@ -183,11 +169,9 @@ adapterEditPlaylistName = async (username, oldName, newName) => {
 
 
 adapterGetMovieDetails = async (movieId) => {
-    return new Promise((resolve, reject) => {
-        readQuery("Movies", {
-            "imdb_title_id": movieId,
-        }, resolve, reject, true)
-    });
+    return await readQueryWrapper("Movies", {
+        "imdb_title_id": movieId,
+    }, true)
 }
 
 
@@ -197,37 +181,29 @@ adapterGetMovieDetails = async (movieId) => {
 
 
 adapterGetMovieReviews = async (movieId) => {
-    return new Promise((resolve, reject) => {
-        readQuery("Reviews", {
-            "movieId": movieId,
-        }, resolve, reject)
-    });
+    return await readQueryWrapper("Reviews", {
+        "movieId": movieId,
+    })
 }
 
 adapterCreateReview = async (review) => {
-    return new Promise((resolve, reject) => {
-        insertQuery("Reviews", review, resolve, reject, true)
-    });
+    return await insertQueryWrapper("Reviews", review, true)
 }
 
 adapterUpdateReview = async (review) => {
-    return new Promise((resolve, reject) => {
-        updateQuery("Reviews", {
-            "movieId": review.movieId,
-            username: review.username
-        }, {
-            $set: review
-        }, resolve, reject, true)
-    });
+    return await updateQueryWrapper("Reviews", {
+        "movieId": review.movieId,
+        username: review.username
+    }, {
+        $set: review
+    }, true)
 }
 
 adapterDeleteReview = async (username, movieId) => {
-    return new Promise((resolve, reject) => {
-        deleteQuery("Reviews", {
-            "username": username,
-            "movieId": movieId
-        }, resolve, reject, true)
-    });
+    return await deleteQueryWrapper("Reviews", {
+        "username": username,
+        "movieId": movieId
+    }, true)
 };
 
 module.exports = {
