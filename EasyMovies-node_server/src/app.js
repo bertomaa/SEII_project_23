@@ -24,9 +24,6 @@ app.post('/users/register', (req, res) => exceptionHandler.exceptionWrapper(user
 //User Login
 app.post('/users/login', (req, res) => exceptionHandler.exceptionWrapper(users.loginUser, req, res));
 
-//Send user profile picture
-app.get('/users/:username/profilepic', (req, res) => exceptionHandler.exceptionWrapper(users.getUserProfilePic, req, res));
-
 //Get public user data
 app.get('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.getUserDetails, req, res));
 
