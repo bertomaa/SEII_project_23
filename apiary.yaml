@@ -21,19 +21,17 @@ paths:
       responses:
         "201":
           description: Created
-          headers: {}
         "409":
           description: Conflict
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Register new User
       operationId: Register new User
       description: ""
   /users/login:
     post:
       requestBody:
+        required: true
         content:
           'application/json':
             schema:
@@ -41,16 +39,12 @@ paths:
       responses:
         "200":
           description: OK
-          headers: {}
         "400":
           description: Bad Request
-          headers: {}
         "401":
           description: Unauthorized
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Access with Credentials
       operationId: Access with Credentials
       description: ""
@@ -59,13 +53,10 @@ paths:
       responses:
         "200":
           description: OK
-          headers: {}
         "400":
           description: Bad Request
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Log out and delete session
       operationId: Log out and delete session
       description: ""
@@ -80,10 +71,8 @@ paths:
                 $ref: '#/components/schemas/UserData'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Public User Data
       operationId: Get Public User Data
       description: ""
@@ -98,10 +87,8 @@ paths:
                 type: string
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get User Profile Picture
       operationId: Get User Profile Picture
       description: ""
@@ -118,10 +105,8 @@ paths:
                   $ref: '#/components/schemas/Review'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get User Reviews
       operationId: Get User Reviews
       description: ""
@@ -138,10 +123,8 @@ paths:
                   $ref: '#/components/schemas/Playlist'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get User Playlists
       operationId: Get User Playlists
       description: ""
@@ -154,16 +137,12 @@ paths:
       responses:
         "201":
           description: Created
-          headers: {}
         "400":
           description: Bad Request
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Create a new Playlist
       operationId: Create a new Playlist
       description: ""
@@ -181,16 +160,12 @@ paths:
       responses:
         "200":
           description: OK
-          headers: {}
         "401":
           description: Unauthorized
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Delete Playlist
       operationId: Delete Playlist
       description: ""
@@ -209,16 +184,12 @@ paths:
       responses:
         "201":
           description: OK
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "401":
           description: Unauthorized
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Add movie to playlist
       operationId: Add movie to playlist
       description: ""
@@ -236,16 +207,12 @@ paths:
       responses:
         "201":
           description: OK
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "401":
           description: Unauthorized
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Edit playlist name
       operationId: Edit playlist name
       description: ""
@@ -263,13 +230,10 @@ paths:
       responses:
         "200":
           description: OK
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Remove movie from playlist
       operationId: Remove movie from playlist
       description: ""
@@ -284,10 +248,8 @@ paths:
                 $ref: '#/components/schemas/Movie'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Movie Data
       operationId: Get Movie Data
       description: ""
@@ -304,10 +266,8 @@ paths:
                   $ref: '#/components/schemas/Review'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Movie Reviews
       operationId: Get Movie Reviews
       description: ""
@@ -315,51 +275,61 @@ paths:
       responses:
         "201":
           description: Review Created
-          headers: {}
         "400":
           description: Bad Request
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Add Movie Review
       operationId: Add Movie Review
       description: ""
-  /movies/{movieId}/reviews/{reviewID}:
     delete:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - movieId
+                - username
+              properties:
+                movieId:
+                  type: string
+                username:
+                  type: string
       responses:
         "200":
           description: OK
-          headers: {}
         "401":
           description: Unauthorized
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Delete Movie Review
       operationId: Delete Movie Review
       description: ""
     patch:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - newreview
+              properties:
+                newreview:
+                  $ref: '#/components/schemas/Review'
       responses:
         "200":
           description: OK
-          headers: {}
         "401":
           description: Unauthorized
-          headers: {}
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Modify Movie Review
       operationId: Modify Movie Review
       description: ""
@@ -376,10 +346,8 @@ paths:
                   $ref: '#/components/schemas/Movie'
         "404":
           description: Not Found
-          headers: {}
         "500":
           description: Internal Server Error
-          headers: {}
       summary: Get Catalog Movies List
       operationId: Get Catalog Movies List
       description: ""
