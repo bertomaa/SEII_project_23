@@ -50,11 +50,6 @@ loginUser = async (req, res) => {
   else
     throw new UnauthorizedException();
 }
-
-getUserProfilePic = (req, res) => {
-  res.sendFile(`./resources/profile_imgs/${req.params.username}.jpg`, { root: __dirname }, (err) => { if (err) throw new InternalServerErrorException(); });
-}
-
 getUserDetails = async (req, res) => {
   const username = req.params.username;
   if (dataChecker.checkFieldsNull([username]))
