@@ -10,6 +10,9 @@ console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+app.use('/profile-images', express.static('public/profile-images'));
+
+
 app.get('/', (req, res) => {
     res.send("live");
 });

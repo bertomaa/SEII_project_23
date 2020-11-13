@@ -36,10 +36,6 @@ loginUser = async (req, res) => {
   logged ? res.status(200).send() : res.status(401).send();
 }
 
-getUserProfilePic = (req, res) => {
-  res.sendFile(`./resources/profile_imgs/${req.params.username}.jpg`, { root: __dirname });
-}
-
 getUserDetails = async (req, res) => {
   const username = req.params.username;
   const details = await adapterGetUserDetails(username);
