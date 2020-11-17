@@ -3,6 +3,7 @@ const sha256 = require('crypto-js/sha256');
 const dbAdapter = require('./dbAdapter');
 const dataChecker = require('./dataChecker');
 const { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } = require('./exceptionHandler');
+const { v4: uuidv4 } = require('uuid');
 
 registerUser = async (req, res) => {
   if (process.env.NODE_ENV === "production") {//si cambia nello start di package.json
@@ -34,35 +35,39 @@ registerUser = async (req, res) => {
   const created = await adapterCreateUser(user).catch(e => console.log("Error: user already exists"));
   if (!created)
     throw new InternalServerErrorException();
-  res.status(201).send();
+  res.status(200).send()
 }
 
 loginUser = async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-
   if (dataChecker.checkFieldsNull([username, password]))
     throw new BadRequestException();
   const hashedPw = sha256(password).toString();
   const logged = await adapterCheckUserCredentials(username, hashedPw);
   if (logged) {
-    res.status(200).writeHead(200, {
-      "Set-Cookie": "sessionId=giusto; HttpOnly",
-      "Access-Control-Allow-Credentials": "true"
-    }).send()
+    const uuid = uuidv4();
+    await saveUuid(username, uuid);
+    res.cookie("sessionId", uuid, {httpOnly: true});
+    res.status(200).send()
   }
   else
     throw new UnauthorizedException();
 }
 
 logoutUser = async (req, res) => {
-  const username = req.query.username;
-  //TODO: delete from database
-  logged ? res.status(200).writeHead(200, {
-    "Set-Cookie": "",
-    "Access-Control-Allow-Credentials": "true"
-  }).send() : res.status(401).send();
+  console.log(req.cookies.sessionId);
+  const username = req.params.username;
+  if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.sessionId]))
+    throw new BadRequestException();
+  if (!( await dataChecker.checkUsername(username)))
+    throw new NotFoundException();
+  const uuid = req.cookies.sessionId;
+  await deleteUuid(username, uuid);
+  res.clearCookie('sessionId');
+  res.status(200).send();
 }
+
 getUserDetails = async (req, res) => {
   const username = req.params.username;
   if (dataChecker.checkFieldsNull([username]))
@@ -180,7 +185,6 @@ editPlaylistName = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-  getUserProfilePic,
   getUserDetails,
   getPlaylists,
   addMovieToPlaylist,

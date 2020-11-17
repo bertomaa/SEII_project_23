@@ -7,27 +7,40 @@ const movies = require('./movies.js');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 var router = express.Router();
-const exceptionHandler = require('./exceptionHandler')
+const exceptionHandler = require('./exceptionHandler');
+const dbAdapter = require('./dbAdapter');
+const dataChecker = require("./dataChecker");
 
 console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-router.use(function(req, res, next) {
+router.use("/users/:username/playlists", function (req, res, next) {
     console.log(req.cookies)
     if (req.cookies && req.cookies.sessionId) {
+        const username = req.params.username;
+        const uuid = req.cookies.sessionId;
+        if (dataChecker.checkFieldsNull([username, uuid]))
+            res.status(400).send();
         console.log("ci sono i cookie")
-        if (req.cookies.sessionId === "giusto") {
-            next('route');
-        }
+        dbAdapter.checkUuid(uuid).then(r => {
+            if (!r) {
+                console.log("next!");
+                next('route');
+            } else {
+                console.log("uuid non valido");
+                res.status(401).send();
+            }
+        })
     } else {
-        console.log("non ci sono i cookie")
+        console.log("uuid non presente")
         res.status(401).send();
     }
 });
 
-app.use("/users/:username/:all", router);
+
+app.use("/", router);
 app.use('/profile-images', express.static('public/profile-images'));
 
 

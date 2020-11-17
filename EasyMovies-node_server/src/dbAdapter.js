@@ -91,6 +91,33 @@ adapterCheckUserCredentials = async (username, password) => {
     }, true);
 }
 
+saveUuid = async (username, uuid) => {
+    return await updateQueryWrapper("Users", {
+        "username": username,
+    },{
+        $push: {
+            "sessions": uuid
+        }
+    }, true);
+}
+
+const checkUuid = async (username, uuid) => {
+    return await readQueryWrapper("Users", {
+        "username": username,
+        "sessions": uuid
+    }, true);
+}
+
+deleteUuid = async (username, uuid) => {
+    return await updateQueryWrapper("Users", {
+        "username": username,
+    },{
+        $pull: {
+            "sessions": uuid
+        }
+    }, true);
+}
+
 adapterCreateUser = async (user) => {
     return await insertQueryWrapper("Users", user, true);;
 }
@@ -210,5 +237,6 @@ module.exports = {
     readQueryWrapper,
     updateQueryWrapper,
     deleteQueryWrapper,
-    insertQueryWrapper
+    insertQueryWrapper,
+    checkUuid,
 }
