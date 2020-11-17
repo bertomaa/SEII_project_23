@@ -22,14 +22,16 @@ const exceptionWrapper = (foo, req, res) => {
             res.status(409).send();
         else if (e instanceof InternalServerErrorException)
             res.status(500).send();
+        else{
+            throw e;
+        }
     });
 }
-
 module.exports = {
     BadRequestException,
     UnauthorizedException,
     NotFoundException,
     ConflictException,
     InternalServerErrorException,
-    exceptionWrapper
+    exceptionWrapper,
 }

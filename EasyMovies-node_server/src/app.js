@@ -4,18 +4,48 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const users = require('./users.js');
 const movies = require('./movies.js');
-const exceptionHandler = require('./exceptionHandler')
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+var router = express.Router();
+const exceptionHandler = require('./exceptionHandler');
+const dbAdapter = require('./dbAdapter');
+const dataChecker = require("./dataChecker");
 
 console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+router.use("/users/:username/playlists", function (req, res, next) {
+    console.log(req.cookies)
+    if (req.cookies && req.cookies.sessionId) {
+        const username = req.params.username;
+        const uuid = req.cookies.sessionId;
+        if (dataChecker.checkFieldsNull([username, uuid]))
+            res.status(400).send();
+        console.log("ci sono i cookie")
+        dbAdapter.checkUuid(uuid).then(r => {
+            if (!r) {
+                console.log("next!");
+                next('route');
+            } else {
+                console.log("uuid non valido");
+                res.status(401).send();
+            }
+        })
+    } else {
+        console.log("uuid non presente")
+        res.status(401).send();
+    }
+});
+
+
+app.use("/", router);
 app.use('/profile-images', express.static('public/profile-images'));
 
 
 app.get('/', (req, res) => {
-    res.send("live");
+    res.send('home page');
 });
 
 //User Register
@@ -23,6 +53,9 @@ app.post('/users/register', (req, res) => exceptionHandler.exceptionWrapper(user
 
 //User Login
 app.post('/users/login', (req, res) => exceptionHandler.exceptionWrapper(users.loginUser, req, res));
+
+//User Logout
+app.post('/users/:username/logout', (req, res) => exceptionHandler.exceptionWrapper(users.logoutUser, req, res));
 
 //Get public user data
 app.get('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.getUserDetails, req, res));
