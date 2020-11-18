@@ -73,9 +73,10 @@ getUserDetails = async (req, res) => {
   if (dataChecker.checkFieldsNull([username]))
     throw new BadRequestException();
   const details = await adapterGetUserDetails(username);
-  delete details['password-hash'];
-  if (details)
+  if (details){
+    delete details['password-hash'];
     res.status(200).send(details);
+  }
   else
     throw new NotFoundException();
 }
