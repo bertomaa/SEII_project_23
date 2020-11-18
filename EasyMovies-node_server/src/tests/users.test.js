@@ -1,6 +1,6 @@
 const request = require("supertest");
-const app = require("../app");
 const dbAdapter = require('../libs/dbAdapter');
+const testCommons = require('./testCommons')
 
 
 describe("Test the users api", () => {
@@ -9,61 +9,61 @@ describe("Test the users api", () => {
 
     let cookies;
 
-    beforeAll(async (done) => {
-        const port = process.env.PORT || 5000;
-        return new Promise(async (resolve, reject) => {
-            await dbAdapter.initDB().catch((e) => reject(e));
-            server = app.listen(port, () => {
-                console.log(`DB connected and server listening on port ${port}`);
-                agent = request.agent(server);
-                done();
-            });
-        });
+    beforeAll((done)=>{testCommons.testConnect(done).then(r=>{server = r.server; agent = r.agent})});
+
+    afterAll((done) => {testCommons.testClose(done, server)});
+
+    test("200 on get user data with existing user", async (done) => {
+        const response = await agent.get('/users/aaaa')
+        expect(response.status).toBe(200);
+        done()
     });
 
-    afterAll((done) => {
-        server.close(() => {
-            dbAdapter.closeDB().then(() => { console.log("Server and DB connection closed"); done(); })
-        });
+    test("404 on get user data with non-existing user", async (done) => {
+         const response = await agent.get("/users/fake-user");
+         expect(response.status).toBe(404);
+         done();
     });
 
-    test("200 on get user data with existing user", () => {
-        agent.get("/users/aaaa").expect(200);
+    test("400 on log out without logging in", async (done) => {
+         const response = await agent.get("/users/aaaa/logout");
+         expect(response.status).toBe(400);
+         done();
     });
 
-    test("404 on get user data with non-existing user", () => {
-        agent.get("/users/fake-user").expect(404);
-    });
-
-    test("400 on log out without logging in", () => {
-        agent.get("/users/aaaa/logout").expect(400);
-    });
-
-    test("200 on successful login", () => {
-        let res = agent.post("/users/aaaa").set({username: "aaaa", password: "aaaa"}).expect(200);
+    test("200 on successful login", async (done) => {
+        const response = agent.post("/users/aaaa").set({username: "aaaa", password: "aaaa"});
+        expect(response.status).toBe(200);
         cookies = res.cookies;
+        done();
     });
 
-    test("200 on successful logout", () => {
-        agent.post("/users/aaaa/logout").set("Cookie", cookies).expect(200);
+    test("200 on successful logout", async (done) => {
+         const response = await agent.post("/users/aaaa/logout").set("Cookie", cookies);
+         expect(response.status).toBe(200);
+         done();
     });
 
-    test("201 on successful user creation", () => {
-        agent.post("/users/register").set({
+    test("201 on successful user creation", async (done) => {
+         const response = await agent.post("/users/register").set({
             name: "new-user-name",
             password: "new-user-password",
             surname: "new-user-surname",
             username: "new-user-username"
-        }).expect(201);
+        });
+        expect(response.status).toBe(201);
+        done();
     });
 
-    test("409 on duplicate user creation", () => {
-        agent.post("/users/register").set({
+    test("409 on duplicate user creation", async (done) => {
+         const response = await agent.post("/users/register").set({
             name: "new-user-name",
             password: "new-user-password",
             surname: "new-user-surname",
             username: "new-user-username"
-        }).expect(409);
+        });
+        expect(response.status).toBe(409);
+        done();
     });
 
 });
