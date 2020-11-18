@@ -2,7 +2,7 @@ const exceptionHandler = require('./exceptionHandler');
 
 var MongoClient = require('mongodb').MongoClient;
 
-var url = "mongodb://localhost:27017/";
+const url = process.env.URL || "mongodb://localhost:27017/";
 
 let dbo;
 MongoClient.connect(url, function (err, db) {

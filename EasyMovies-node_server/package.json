@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "jest",
-        "start": "NODE_ENV=development nodemon src/app.js",
+        "start": "NODE_ENV=development URL='mongodb+srv://ingSoft:1ngS0ft@cluster0.ijjug.mongodb.net/' nodemon src/app.js",
         "start-windows": "nodemon src/app.js"
     },
     "repository": {
