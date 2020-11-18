@@ -2,42 +2,24 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 5000;
-const users = require('./users.js');
-const movies = require('./movies.js');
+const users = require('./api/users.js');
+const movies = require('./api/movies.js');
+const reviews = require('./api/reviews.js');
+const playlists = require('./api/playlists.js');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 var router = express.Router();
-const exceptionHandler = require('./exceptionHandler');
-const dbAdapter = require('./dbAdapter');
-const dataChecker = require("./dataChecker");
+const exceptionHandler = require('./libs/exceptionHandler');
+const dbAdapter = require('./libs/dbAdapter');
+const dataChecker = require("./libs/dataChecker");
+const authorizations = require("./libs/authorizations");
 
 console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-router.use("/users/:username/playlists", function (req, res, next) {
-    console.log(req.cookies)
-    if (req.cookies && req.cookies.sessionId) {
-        const username = req.params.username;
-        const uuid = req.cookies.sessionId;
-        if (dataChecker.checkFieldsNull([username, uuid]))
-            res.status(400).send();
-        console.log("ci sono i cookie")
-        dbAdapter.checkUuid(uuid).then(r => {
-            if (!r) {
-                console.log("next!");
-                next('route');
-            } else {
-                console.log("uuid non valido");
-                res.status(401).send();
-            }
-        })
-    } else {
-        console.log("uuid non presente")
-        res.status(401).send();
-    }
-});
+router.use("/users/:username/playlists", authorizations.authorizationCallBack);
 
 
 app.use("/", router);
@@ -67,22 +49,22 @@ app.get('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(user
 
 
 //Get user playlists
-app.get('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(users.getPlaylists, req, res));
+app.get('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.getPlaylists, req, res));
 
 //Add movie to playlist
-app.put('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(users.addMovieToPlaylist, req, res));
+app.put('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.addMovieToPlaylist, req, res));
 
 //Edit playlist name
-app.patch('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(users.editPlaylistName, req, res));
+app.patch('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.editPlaylistName, req, res));
 
 //Remove movie from playlist
-app.delete('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(users.removeMovieFromPlaylist, req, res));
+app.delete('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.removeMovieFromPlaylist, req, res));
 
 //Create playlist
-app.put('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(users.createPlaylist, req, res));
+app.put('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.createPlaylist, req, res));
 
 //Delete playlist
-app.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(users.deletePlaylist, req, res));
+app.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
 
 
 //#####################################################
@@ -100,16 +82,16 @@ app.get('/movies/:movieId', (req, res) => exceptionHandler.exceptionWrapper(movi
 
 
 //Get movie reviews
-app.get('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(movies.getMovieReviews, req, res));
+app.get('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getMovieReviews, req, res));
 
 //Create movie review
-app.put('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(movies.createMovieReview, req, res));
+app.put('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.createMovieReview, req, res));
 
 //Update movie review
-app.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(movies.updateMovieReview, req, res));
+app.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.updateMovieReview, req, res));
 
 //Delete movie review
-app.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(movies.deleteMovieReview, req, res));
+app.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.deleteMovieReview, req, res));
 
 
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
