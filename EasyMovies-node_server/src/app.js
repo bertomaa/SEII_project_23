@@ -1,9 +1,10 @@
 const express = require('express');
 var bodyParser = require('body-parser');
 const app = express();
-const PORT = process.env.PORT || 5000;
-const users = require('./users.js');
-const movies = require('./movies.js');
+const users = require('./api/users.js');
+const movies = require('./api/movies.js');
+const reviews = require('./api/reviews.js');
+const playlists = require('./api/playlists.js');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 var router = express.Router();
@@ -111,5 +112,4 @@ app.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWr
 //Delete movie review
 app.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(movies.deleteMovieReview, req, res));
 
-
-app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
+module.exports = app;
