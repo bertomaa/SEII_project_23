@@ -6,4 +6,4 @@ env:
 script:
   - cd EasyMovies-node_server
   - npm install
-  - npm run prod
+  - npm run test
