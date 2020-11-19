@@ -14,13 +14,14 @@ describe("Test the movies api", () => {
     afterAll((done) => {testCommons.testClose(done, server)});
 
     test("200 on get movie data with existing movie", async (done) => {
-        const response = await agent.get('/movies/tt0000009')
+        const response = await agent.get('/movies/tt0000009');
         expect(response.status).toBe(200);
-        done()
+        done();
     });
 
     test("404 on get movie data with non-existing movie", async (done) => {
-        const response = await agent.get("/movies/fake-movie")
+        const response = await agent.get("/movies/fake-movie");
         expect(response.status).toBe(404);
+        done();
     });
 });
