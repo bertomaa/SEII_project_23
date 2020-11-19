@@ -5,4 +5,4 @@ env:
   - URL='mongodb+srv://ingSoft:1ngS0ft@cluster0.ijjug.mongodb.net/'
 script:
   - cd EasyMovies-node_server
-  - npm run start
+  - npm run prod
