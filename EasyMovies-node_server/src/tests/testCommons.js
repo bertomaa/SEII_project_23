@@ -2,10 +2,10 @@ const request = require("supertest");
 const app = require("../app");
 const dbAdapter = require('../libs/dbAdapter');
 
-const testConnect = async (done) =>{
+const testConnect = async(done) => {
     const port = process.env.PORT || 5000;
     let server, agent;
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         await dbAdapter.initDB().catch((e) => reject(e));
         server = app.listen(port, () => {
             console.log(`DB connected and server listening on port ${port}`);
@@ -19,9 +19,12 @@ const testConnect = async (done) =>{
     });
 }
 
-const testClose = async (done, server) =>{
+const testClose = async(done, server) => {
     server.close(() => {
-        dbAdapter.closeDB().then(() => { console.log("Server and DB connection closed"); done(); })
+        dbAdapter.closeDB().then(() => {
+            console.log("Server and DB connection closed");
+            done();
+        })
     });
 }
 
