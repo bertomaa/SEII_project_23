@@ -4,12 +4,17 @@ const { BadRequestException, ConflictException, InternalServerErrorException, No
 const dbAdapter = require('./dbAdapter');
 var router = express.Router();
 
-const authorizationCallBack = (req, res, next) => {
-    console.log(req.cookies)
+const authorizationCallBack = async (req, res, next) => {
+    const username = req.params.username;
+    if (dataChecker.checkFieldsNull([username]))
+        res.status(400).send();
+    if(!(await dataChecker.checkUsername(username))){
+        res.send(404);
+        return;
+    }
     if (req.cookies && req.cookies.sessionId) {
-        const username = req.params.username;
         const uuid = req.cookies.sessionId;
-        if (dataChecker.checkFieldsNull([username, uuid]))
+        if (dataChecker.checkFieldsNull([uuid]))
             res.status(400).send();
         console.log("ci sono i cookie")
         dbAdapter.checkUuid(username, uuid).then(r => {
