@@ -42,7 +42,7 @@ app.use('/api/:apiVersion', apiVersionManager({
 
 
 routerApiV1.use("/", authorizationRouter);
-routerApiV1.use('/profile-images', express.static('public/profile-images'));
+app.use('/profile-images', express.static('public/profile-images'));
 
 
 routerApiV1.get('/', (req, res) => {
@@ -102,6 +102,9 @@ routerApiV1.get('/movies/:movieId', (req, res) => exceptionHandler.exceptionWrap
 
 //Get movie reviews
 routerApiV1.get('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getMovieReviews, req, res));
+
+//Get movie reviews
+routerApiV1.get('/users/:username/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getUserReviews, req, res));
 
 //Create movie review
 routerApiV1.put('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.createMovieReview, req, res));

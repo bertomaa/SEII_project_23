@@ -65,9 +65,21 @@ deleteMovieReview = async (req, res) => {
         res.status(201).send(ret)
 }
 
+getUserReviews = async (req, res) => {
+    const username = req.params.username;
+    if(dataChecker.checkFieldsNull([username]))
+        throw new BadRequestException();
+    if(! await dataChecker.existsDBField("Users", "username", username))
+        throw new NotFoundException();
+    let ret = await adapterGetUserReviews(username);
+    res.status(200).send(ret)
+}
+
+
 module.exports = {
     getMovieReviews,
     createMovieReview,
     updateMovieReview,
-    deleteMovieReview
+    deleteMovieReview,
+    getUserReviews
 }
