@@ -54,7 +54,6 @@ loginUser = async (req, res) => {
 }
 
 logoutUser = async (req, res) => {
-  console.log(req.cookies);
   const username = req.params.username;
   if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.sessionId]))
     throw new BadRequestException();
