@@ -36,12 +36,12 @@ describe("Test the playlists api", () => {
     });
 
     test("200 on successful login", async(done) => {
-        const response1 = await agent.post("/users/login").send({ username: "aaaa", password: "aaaa" });
-        expect(response1.status).toBe(200);
+        const response = await agent.post("/users/login").send({ username: "aaaa", password: "aaaa" });
+        expect(response.status).toBe(200);
         done();
     });
 
-    test("200 on create playlists with permissions", async (done) => {
+    test("200 on get playlists with permissions", async (done) => {
         const response = await agent.get('/users/aaaa/playlists');
         expect(response.status).toBe(200);
         done();
@@ -51,12 +51,6 @@ describe("Test the playlists api", () => {
         const response = await agent.put('/users/aaaa/playlists').send({"playlist": "test-playlist"});
         expect(response.status).toBe(201);
         done()
-    });
-
-    test("201 on create playlists with permissions", async (done) => {
-        const response = await agent.put('/users/aaaa/playlists').send({"playlist": "test-playlist"});
-        expect(response.status).toBe(201);
-        done();
     });
 
     test("401 on create playlists without permissions", async (done) => {
@@ -119,9 +113,9 @@ describe("Test the playlists api", () => {
         done();
     });
 
-    test("201 on edit playlist name", async (done) => {
+    test("200 on edit playlist name", async (done) => {
         const response = await agent.patch('/users/aaaa/playlists/test-playlist').send({"newName": "new-name"});
-        expect(response.status).toBe(201);
+        expect(response.status).toBe(200);
         done();
     });
 
@@ -144,8 +138,9 @@ describe("Test the playlists api", () => {
     });
 
     test("200 on delete movie from playlist", async (done) => {
-        const response = await agent.delete('/users/aaaa/playlists/test-playlist').send({"movieId": "tt0000009"});
-        expect(response.status).toBe(200);
+        const response1 = await agent.put('/users/aaaa/playlists/new-name').send({"movieId": "tt0000009"});
+        const response2 = await agent.delete('/users/aaaa/playlists/new-name').send({"movieId": "tt0000009"});
+        expect(response2.status).toBe(200);
         done();
     });
 
@@ -162,7 +157,7 @@ describe("Test the playlists api", () => {
     });
 
     test("400 on delete movie from playlist without correct data", async (done) => {
-        const response = await agent.delete('/users/aaaa/playlists/test-playlist').send({});
+        const response = await agent.delete('/users/aaaa/playlists/new-name').send({});
         expect(response.status).toBe(400);
         done();
     });
