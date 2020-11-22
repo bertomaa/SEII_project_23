@@ -56,13 +56,13 @@ createMovieReview = async (req, res) => {
 
 deleteMovieReview = async (req, res) => {
     const movieId = req.params.movieId;
-    const username = req.query.username;
+    const username = req.body.username;
     if(dataChecker.checkFieldsNull([movieId, username]))
         throw new BadRequestException();
     if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
         throw new NotFoundException();
-        let ret = await adapterDeleteReview(review);
-        res.status(201).send(ret)
+    let ret = await adapterDeleteReview(username,movieId);
+    res.status(201).send(ret);
 }
 
 module.exports = {
