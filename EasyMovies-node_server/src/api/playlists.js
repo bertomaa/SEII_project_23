@@ -29,14 +29,8 @@ addMovieToPlaylist = async (req, res) => {
   const movie = req.body.movieId;
   if (dataChecker.checkFieldsNull([username, playlist, movie]))
     throw new BadRequestException();
-  await dbAdapter.readQueryWrapper("Playlists", {
-    "username": username,
-    "name": playlist,
-  }).then(r => {
-    if (r.length == 0) {
-      throw new NotFoundException();
-    }
-  });
+  if(!(await dataChecker.existsDBFields("Playlists", {"username": username,"name": playlist,})))
+    throw new NotFoundException();
   adapterAddMovieToPlaylist(username, playlist, movie).then(r => {
     res.status(200).send();
   })
@@ -70,6 +64,8 @@ createPlaylist = async (req, res) => {
     throw new BadRequestException();
   if (! await dataChecker.checkUsername(username))
     throw new NotFoundException();
+  if(await dataChecker.existsDBFields("Playlists", {"username": username,"name": playlist,}))
+    throw new ConflictException();
   await adapterCreatePlaylist(username, playlist).then(r => {
     res.status(201).send();
   });
@@ -82,14 +78,8 @@ deletePlaylist = async (req, res) => {
     throw new BadRequestException();
   if (! await dataChecker.checkUsername(username))
     throw new NotFoundException();
-  await dbAdapter.readQueryWrapper("Playlists", {
-    "username": username,
-    "name": playlist
-  }).then(r => {
-    if (r.length == 0) {
-      throw new NotFoundException();
-    }
-  });
+  if(!(await dataChecker.existsDBFields("Playlists", {"username": username,"name": playlist,})))
+    throw new NotFoundException();
   await adapterDeletePlaylist(username, playlist).then(r => {
     res.status(200).send();
   });
@@ -101,14 +91,8 @@ editPlaylistName = async (req, res) => {
   const newName = req.body.newName;
   if (dataChecker.checkFieldsNull([username, oldName]))
     throw new BadRequestException();
-  await dbAdapter.readQueryWrapper("Playlists", {
-    "username": username,
-    "name": oldName
-  }).then(r => {
-    if (r.length == 0) {
-      throw new NotFoundException();
-    }
-  });
+  if(!(await dataChecker.existsDBFields("Playlists", {"username": username,"name": oldName,})))
+    throw new NotFoundException();
   await adapterEditPlaylistName(username, oldName, newName).then(r => {
     res.status(200).send();
   });
