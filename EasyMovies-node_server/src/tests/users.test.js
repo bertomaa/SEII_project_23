@@ -16,6 +16,9 @@ describe("Test the users api", () => {
 
     afterAll((done) => { testCommons.testClose(done, server) });
 
+
+
+    
     //GET /users/username
 
     test("200 on get user data with existing user", async(done) => {
@@ -38,9 +41,9 @@ describe("Test the users api", () => {
         done();
     });
 
-    test("401 on login with non-existing username", async(done) => {
+    test("404 on login with non-existing username", async(done) => {
         const response1 = await agent.post("/users/login").send({ username: "bbbb", password: "bbbb" });
-        expect(response1.status).toBe(401);
+        expect(response1.status).toBe(404);
         done();
     });
 
@@ -70,9 +73,9 @@ describe("Test the users api", () => {
         done();
     });
 
-    test("400 on log out without logging in", async(done) => {
+    test("401 on log out without logging in", async(done) => {
         const response = await agent.post("/users/aaaa/logout");
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(401);
         done();
     });
 
@@ -124,4 +127,24 @@ describe("Test the users api", () => {
         done();
     });
 
+    //DELETE /users/username
+
+    test("200 on successful user deletion", async(done) => {
+        await agent.post("/users/login").send({ username: "test-user-username", password: "test-user-password" });
+        const response = await agent.delete("/users/test-user-username");
+        expect(response.status).toBe(200);
+        done();
+    });
+
+    test("401 on user deletion with no authorization", async(done) => {
+        const response = await agent.delete("/users/aaaa");
+        expect(response.status).toBe(401);
+        done();
+    });
+
+    test("404 on non-existing user delete", async(done) => {
+        const response = await agent.delete("/users/test-user-username");
+        expect(response.status).toBe(404);
+        done();
+    });
 });

@@ -9,7 +9,7 @@ const authorizationCallBack = async (req, res, next) => {
     if (dataChecker.checkFieldsNull([username]))
         res.status(400).send();
     if(!(await dataChecker.checkUsername(username))){
-        res.send(404);
+        res.sendStatus(404);
         return;
     }
     if (req.cookies && req.cookies.sessionId) {
