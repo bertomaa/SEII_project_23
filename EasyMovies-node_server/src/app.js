@@ -21,6 +21,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 router.use("/users/:username/playlists", authorizations.authorizationCallBack);
 
 
+
+
 app.use("/", router);
 app.use('/profile-images', express.static('public/profile-images'));
 
@@ -28,6 +30,10 @@ app.use('/profile-images', express.static('public/profile-images'));
 app.get('/', (req, res) => {
     res.send('home page');
 });
+
+//#####################################################
+// USERS
+//#####################################################
 
 //User Register
 app.post('/users/register', (req, res) => exceptionHandler.exceptionWrapper(users.registerUser, req, res));
@@ -41,6 +47,16 @@ app.post('/users/:username/logout', (req, res) => exceptionHandler.exceptionWrap
 //Get public user data
 app.get('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.getUserDetails, req, res));
 
+app.delete('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.deleteUser, req, res));
+
+router.use("/users/:username", (req, res, next) => {
+    if(req.method === "GET" || req.params.username === "login" || req.params.username === "register"){
+        next('route');
+    }
+    else{
+        authorizations.authorizationCallBack(req, res, next);
+    }
+});
 
 //#####################################################
 // PLAYLISTS

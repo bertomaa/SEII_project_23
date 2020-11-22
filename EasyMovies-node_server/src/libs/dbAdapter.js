@@ -139,6 +139,10 @@ deleteUuid = async (username, uuid) => {
     }, true);
 }
 
+adapterDeleteUser = async (username) => {
+    return await deleteQueryWrapper("Users", {"username": username}, true);
+}
+
 adapterCreateUser = async (user) => {
     return await insertQueryWrapper("Users", user, true);;
 }
@@ -261,5 +265,6 @@ module.exports = {
     insertQueryWrapper,
     checkUuid,
     initDB,
-    closeDB
+    closeDB,
+    adapterDeleteUser
 }

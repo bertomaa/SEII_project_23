@@ -42,6 +42,8 @@ loginUser = async (req, res) => {
   const password = req.body.password;
   if (dataChecker.checkFieldsNull([username, password]))
     throw new BadRequestException();
+  if (! await dataChecker.checkUsername(username))
+    throw new NotFoundException();
   const hashedPw = sha256(password).toString();
   const logged = await adapterCheckUserCredentials(username, hashedPw);
   if (logged) {
@@ -65,6 +67,17 @@ logoutUser = async (req, res) => {
   res.status(200).send();
 }
 
+deleteUser = async (req, res) => {
+  const username = req.params.username;
+  if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.sessionId]))
+    throw new BadRequestException();
+  if (!(await dataChecker.checkUsername(username)))
+    throw new NotFoundException();
+  await adapterDeleteUser(username);
+  res.clearCookie('sessionId');
+  res.status(200).send();
+}
+
 getUserDetails = async (req, res) => {
   const username = req.params.username;
   if (dataChecker.checkFieldsNull([username]))
@@ -81,5 +94,6 @@ module.exports = {
   registerUser,
   loginUser,
   logoutUser,
-  getUserDetails
+  getUserDetails,
+  deleteUser
 }
