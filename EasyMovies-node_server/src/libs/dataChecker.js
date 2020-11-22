@@ -14,9 +14,7 @@ checkFieldsNull = (fieldsList) => {
     return false;
 }
 
-existsDBField = async (collection, field, value) => {
-    let query = {};
-    query[field] = value;
+existsDBFields = async (collection, query) => {
     let promise =  dbAdapter.readQueryWrapper(collection, query, true).then((res) => {
         return res ? true: false;
     }).catch(() => {
@@ -24,6 +22,12 @@ existsDBField = async (collection, field, value) => {
     })
     let res = await promise;
     return res;
+}
+
+existsDBField = async (collection, field, value) => {
+    let query = {};
+    query[field] = value;
+    return await existsDBFields(collection,query);
 }
 
 checkUsername = async (username) => {
@@ -45,6 +49,7 @@ module.exports = {
     checkNull,
     checkFieldsNull,
     existsDBField,
+    existsDBFields,
     checkUsername,
     adapterWrapper
 }
