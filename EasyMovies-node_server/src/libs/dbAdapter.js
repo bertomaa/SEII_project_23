@@ -2,7 +2,7 @@ const exceptionHandler = require('./exceptionHandler');
 
 var MongoClient = require('mongodb').MongoClient;
 
-var url = "mongodb://localhost:27017/";
+const url = process.env.URL || "mongodb://localhost:27017/";
 
 let db;
 let dbo;
@@ -228,13 +228,19 @@ adapterGetMovieDetails = async (movieId) => {
 
 
 //#####################################################
-// RECENSIONI
+// REVIEWS
 //#####################################################
 
 
 adapterGetMovieReviews = async (movieId) => {
     return await readQueryWrapper("Reviews", {
         "movieId": movieId,
+    })
+}
+
+adapterGetUserReviews = async (username) => {
+    return await readQueryWrapper("Reviews", {
+        "username": username,
     })
 }
 
