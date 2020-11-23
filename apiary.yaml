@@ -21,13 +21,14 @@ paths:
       responses:
         "201":
           description: Created
+        "400":
+          description: Bad Request
         "409":
           description: Conflict
         "500":
           description: Internal Server Error
       summary: Register new User
       operationId: Register new User
-      description: ""
   /users/login:
     post:
       requestBody:
@@ -47,20 +48,36 @@ paths:
           description: Internal Server Error
       summary: Access with Credentials
       operationId: Access with Credentials
-      description: ""
   /users/{username}/logout:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: User that logs out
+        schema:
+          type : string
     post:
       responses:
         "200":
           description: OK
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
         "500":
           description: Internal Server Error
       summary: Log out and delete session
       operationId: Log out and delete session
-      description: ""
   /users/{username}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: User to which belongs the information
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -75,8 +92,26 @@ paths:
           description: Internal Server Error
       summary: Get Public User Data
       operationId: Get Public User Data
-      description: ""
+    delete:
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete a User
+      operationId: Delete a User
   /users/{username}/profilepic:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: User to which belongs the profilepic
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -91,8 +126,14 @@ paths:
           description: Internal Server Error
       summary: Get User Profile Picture
       operationId: Get User Profile Picture
-      description: ""
   /users/{username}/reviews:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: User to which the reviews refer to
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -109,8 +150,14 @@ paths:
           description: Internal Server Error
       summary: Get User Reviews
       operationId: Get User Reviews
-      description: ""
   /users/{username}/playlists:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: User to which the playlists belong to
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -121,19 +168,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Playlist'
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
           description: Internal Server Error
       summary: Get User Playlists
       operationId: Get User Playlists
-      description: ""
     post:
       requestBody:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/Playlist'
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
       responses:
         "201":
           description: Created
@@ -145,7 +198,6 @@ paths:
           description: Internal Server Error
       summary: Create a new Playlist
       operationId: Create a new Playlist
-      description: ""
     delete:
       requestBody:
         content:
@@ -170,8 +222,20 @@ paths:
           description: Internal Server Error
       summary: Delete Playlist
       operationId: Delete Playlist
-      description: ""
   /users/{username}/playlists/{playlistId}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: User to which the playlist belongs
+        schema:
+          type : string
+      - name: playlistId
+        in: path
+        required: true
+        description: The playlist id
+        schema:
+          type : string
     post:
       requestBody:
         content:
@@ -196,7 +260,6 @@ paths:
           description: Internal Server Error
       summary: Add movie to playlist
       operationId: Add movie to playlist
-      description: ""
     patch:
       requestBody:
         content:
@@ -211,15 +274,16 @@ paths:
       responses:
         "201":
           description: OK
-        "404":
-          description: Not Found
+        "400":
+          description: Bad Request
         "401":
           description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Edit playlist name
       operationId: Edit playlist name
-      description: ""
     delete:
       requestBody:
         content:
@@ -234,14 +298,24 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
           description: Internal Server Error
       summary: Remove movie from playlist
       operationId: Remove movie from playlist
-      description: ""
   /movies/{movieId}:
+    parameters:
+      - name: movieId
+        in: path
+        required: true
+        description: The id of the movie
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -256,8 +330,14 @@ paths:
           description: Internal Server Error
       summary: Get Movie Data
       operationId: Get Movie Data
-      description: ""
   /movies/{movieId}/reviews:
+    parameters:
+      - name: movieId
+        in: path
+        required: true
+        description: The id of the movie
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -274,20 +354,25 @@ paths:
           description: Internal Server Error
       summary: Get Movie Reviews
       operationId: Get Movie Reviews
-      description: ""
     post:
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Review'
       responses:
         "201":
           description: Review Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
           description: Internal Server Error
       summary: Add Movie Review
       operationId: Add Movie Review
-      description: ""
     delete:
       requestBody:
         content:
@@ -305,6 +390,8 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
         "401":
           description: Unauthorized
         "404":
@@ -313,18 +400,12 @@ paths:
           description: Internal Server Error
       summary: Delete Movie Review
       operationId: Delete Movie Review
-      description: ""
     patch:
       requestBody:
         content:
           'application/json':
             schema:
-              type: object
-              required:
-                - newreview
-              properties:
-                newreview:
-                  $ref: '#/components/schemas/Review'
+              $ref: '#/components/schemas/Review'
       responses:
         "200":
           description: OK
@@ -336,8 +417,14 @@ paths:
           description: Internal Server Error
       summary: Modify Movie Review
       operationId: Modify Movie Review
-      description: ""
   /catalog/{catalogName}:
+    parameters:
+      - name: catalogName
+        in: path
+        required: true
+        description: The naem of the catalog
+        schema:
+          type : string
     get:
       responses:
         "200":
@@ -354,16 +441,10 @@ paths:
           description: Internal Server Error
       summary: Get Catalog Movies List
       operationId: Get Catalog Movies List
-      description: ""
 servers:
   - url: https://localhost:5000/
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        error: 
-          type: string
     UserCredentials:
       type: object
       required:
@@ -391,7 +472,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         title:
           type: string
         overview:
@@ -414,8 +495,8 @@ components:
       - rate
       properties:
         movieId:
-          type: integer
-        uername:
+          type: string
+        username:
           type: string
         title:
           type: string
