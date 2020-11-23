@@ -49,6 +49,10 @@ routerApiV1.get('/', (req, res) => {
     res.send('home page');
 });
 
+//#####################################################
+// USERS
+//#####################################################
+
 //User Register
 routerApiV1.post('/users/register', (req, res) => exceptionHandler.exceptionWrapper(users.registerUser, req, res));
 
@@ -61,6 +65,18 @@ routerApiV1.post('/users/:username/logout', (req, res) => exceptionHandler.excep
 //Get public user data
 routerApiV1.get('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.getUserDetails, req, res));
 
+//Delete user
+routerApiV1.delete('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.deleteUser, req, res));
+
+//SECURITY
+authorizationRouter.use("/users/:username", (req, res, next) => {
+    if(req.method === "GET" || req.params.username === "login" || req.params.username === "register"){
+        next('route');
+    }
+    else{
+        authorizations.authorizationCallBack(req, res, next);
+    }
+});
 
 //#####################################################
 // PLAYLISTS
@@ -85,6 +101,8 @@ routerApiV1.put('/users/:username/playlists', (req, res) => exceptionHandler.exc
 //Delete playlist
 routerApiV1.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
 
+//SECURITY
+authorizationRouter.use("/users/:username/playlists", authorizations.authorizationCallBack);
 
 //#####################################################
 // MOVIES
@@ -115,5 +133,14 @@ routerApiV1.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exc
 //Delete movie review
 routerApiV1.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.deleteMovieReview, req, res));
 
+//SECURITY
+authorizationRouter.use("/movies/:movieId/reviews", (req,res,next) => {
+    if (req.method==="GET") {
+        next('route');
+    }
+    else {
+        authorizations.authorizationCallBack(req,res,next);
+    }
+});
 
-app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
+module.exports = {app,routerApiV1};

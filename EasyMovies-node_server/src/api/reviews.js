@@ -4,9 +4,9 @@ const dbAdapter = require('../libs/dbAdapter');
 
 getMovieReviews = async (req, res) => {
     const movieId = req.params.movieId;
-    if(dataChecker.checkFieldsNull([movieId]))
+    if (dataChecker.checkFieldsNull([movieId]))
         throw new BadRequestException();
-    if(! await dataChecker.existsDBField("Movies", "imdb_title_id", movieId))
+    if (! await dataChecker.existsDBField("Movies", "imdb_title_id", movieId))
         throw new NotFoundException();
     let ret = await adapterGetMovieReviews(movieId);
     res.status(200).send(ret)
@@ -18,9 +18,11 @@ updateMovieReview = async (req, res) => {
     const title = req.body.title;
     const content = req.body.content;
     const rate = req.body.rate;
-    if(dataChecker.checkFieldsNull([movieId, username, title, content, rate]))
+    if (dataChecker.checkFieldsNull([movieId, username, title, content, rate]))
         throw new BadRequestException();
-    if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+    if (!(await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+        throw new NotFoundException();
+    if (!(await dataChecker.existsDBFields("Reviews", { "movieId": movieId, "username": username, })))
         throw new NotFoundException();
     let review = {
         "movieId": movieId,
@@ -39,10 +41,12 @@ createMovieReview = async (req, res) => {
     const title = req.body.title;
     const content = req.body.content;
     const rate = req.body.rate;
-    if(dataChecker.checkFieldsNull([movieId, username, title, content, rate]))
+    if (dataChecker.checkFieldsNull([movieId, username, title, content, rate]) || rate > 10 || rate < 0)
         throw new BadRequestException();
-    if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+    if (!(await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
         throw new NotFoundException();
+    if (await dataChecker.existsDBFields("Reviews", { "movieId": movieId, "username": username, }))
+        throw new ConflictException();
     let review = {
         "movieId": movieId,
         "username": username,
@@ -56,13 +60,15 @@ createMovieReview = async (req, res) => {
 
 deleteMovieReview = async (req, res) => {
     const movieId = req.params.movieId;
-    const username = req.query.username;
-    if(dataChecker.checkFieldsNull([movieId, username]))
+    const username = req.body.username;
+    if (dataChecker.checkFieldsNull([movieId, username]))
         throw new BadRequestException();
-    if(!( await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
+    if (!(await dataChecker.checkUsername(username) && await dataChecker.existsDBField("Movies", "imdb_title_id", movieId)))
         throw new NotFoundException();
-        let ret = await adapterDeleteReview(review);
-        res.status(201).send(ret)
+    if (!(await dataChecker.existsDBFields("Reviews", { "movieId": movieId, "username": username, })))
+        throw new NotFoundException();
+    let ret = await adapterDeleteReview(username, movieId);
+    res.status(200).send(ret);
 }
 
 getUserReviews = async (req, res) => {

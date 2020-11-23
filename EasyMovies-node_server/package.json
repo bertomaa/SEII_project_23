@@ -4,10 +4,10 @@
     "description": "SEII_project_23",
     "main": "index.js",
     "scripts": {
-        "test": "jest",
-        "start": "NODE_ENV=development nodemon src/app.js",
-        "prod": "node src/app.js",
-        "start-windows": "nodemon src/app.js"
+        "test": "jest --detectOpenHandles",
+        "start": "NODE_ENV=development nodemon src/server.js",
+        "prod": "node src/server.js",
+        "start-windows": "nodemon src/server.js"
     },
     "repository": {
         "type": "git",
@@ -30,7 +30,11 @@
         "uuid": "^8.3.1"
     },
     "devDependencies": {
-        "jest": "^26.6.3"
+        "babel-cli": "^6.26.0",
+        "babel-preset-env": "^1.7.0",
+        "jest": "^26.6.3",
+        "superagent": "^6.1.0",
+        "supertest": "^6.0.1"
     },
     "jest": {
         "verbose": true,

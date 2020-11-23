@@ -4,11 +4,32 @@ var MongoClient = require('mongodb').MongoClient;
 
 const url = process.env.URL || "mongodb://localhost:27017/";
 
+let db;
 let dbo;
-MongoClient.connect(url, function (err, db) {
+
+MongoClient.connect(url, function (err, dataBase) {
     if (err) throw err;
+    db = dataBase;
     dbo = db.db("easyMovies");
 });
+
+function initDB() {
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(url, function (err, dataBase) {
+            if (err) reject();
+            db = dataBase;
+            dbo = dataBase.db("easyMovies");
+            resolve();
+        });
+    });
+}
+
+function closeDB() {
+    return new Promise((resolve, reject) => {
+        db.close((err) => { if (err) reject(); else resolve(); });
+
+    });
+}
 
 //#####################################################
 // METODI DATABASE
@@ -57,25 +78,25 @@ async function deleteQuery(collection, toDelete, resolve, reject, one) {
 const readQueryWrapper = async (collection, query, onlyFirst) => {
     return new Promise((resolve, reject) => {
         readQuery(collection, query, resolve, reject, onlyFirst)
-    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
+    }).catch((e) => { throw new exceptionHandler.InternalServerErrorException() });
 }
 
 const updateQueryWrapper = async (collection, obj, toAdd, onlyFirst) => {
     return new Promise((resolve, reject) => {
         updateQuery(collection, obj, toAdd, resolve, reject, onlyFirst)
-    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
+    }).catch((e) => { throw new exceptionHandler.InternalServerErrorException() });
 }
 
 const insertQueryWrapper = async (collection, toInsert, onlyFirst) => {
     return new Promise((resolve, reject) => {
         insertQuery(collection, toInsert, resolve, reject, onlyFirst)
-    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
+    }).catch((e) => { throw new exceptionHandler.InternalServerErrorException() });
 }
 
 const deleteQueryWrapper = async (collection, toDelete, onlyFirst) => {
     return new Promise((resolve, reject) => {
         deleteQuery(collection, toDelete, resolve, reject, onlyFirst)
-    }).catch((e) => {throw new exceptionHandler.InternalServerErrorException()});
+    }).catch((e) => { throw new exceptionHandler.InternalServerErrorException() });
 }
 
 
@@ -94,7 +115,7 @@ adapterCheckUserCredentials = async (username, password) => {
 saveUuid = async (username, uuid) => {
     return await updateQueryWrapper("Users", {
         "username": username,
-    },{
+    }, {
         $push: {
             "sessions": uuid
         }
@@ -111,11 +132,15 @@ const checkUuid = async (username, uuid) => {
 deleteUuid = async (username, uuid) => {
     return await updateQueryWrapper("Users", {
         "username": username,
-    },{
+    }, {
         $pull: {
             "sessions": uuid
         }
     }, true);
+}
+
+adapterDeleteUser = async (username) => {
+    return await deleteQueryWrapper("Users", {"username": username}, true);
 }
 
 adapterCreateUser = async (user) => {
@@ -245,4 +270,7 @@ module.exports = {
     deleteQueryWrapper,
     insertQueryWrapper,
     checkUuid,
+    initDB,
+    closeDB,
+    adapterDeleteUser
 }

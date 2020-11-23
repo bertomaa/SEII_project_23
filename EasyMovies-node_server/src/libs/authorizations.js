@@ -4,25 +4,30 @@ const { BadRequestException, ConflictException, InternalServerErrorException, No
 const dbAdapter = require('./dbAdapter');
 var router = express.Router();
 
-const authorizationCallBack = (req, res, next) => {
-    console.log(req.cookies)
+const authorizationCallBack = async (req, res, next) => {
+    const username = req.params.username || req.body.username;
+    if (dataChecker.checkFieldsNull([username]))
+        res.status(400).send();
+    if(!(await dataChecker.checkUsername(username))){
+        res.status(404).send();
+        return;
+    }
     if (req.cookies && req.cookies.sessionId) {
-        const username = req.params.username;
         const uuid = req.cookies.sessionId;
-        if (dataChecker.checkFieldsNull([username, uuid]))
+        if (dataChecker.checkFieldsNull([uuid]))
             res.status(400).send();
-        console.log("ci sono i cookie")
+        //console.log("ci sono i cookie")
         dbAdapter.checkUuid(username, uuid).then(r => {
             if (r) {
                 // console.log("next!");
                 next('route');
             } else {
-                console.log("uuid non valido");
+                //console.log("uuid non valido");
                 res.status(401).send();
             }
         })
     } else {
-        console.log("uuid non presente")
+        //console.log("uuid non presente")
         res.status(401).send();
     }
 }
