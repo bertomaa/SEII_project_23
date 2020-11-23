@@ -18,11 +18,6 @@ console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-router.use("/users/:username/playlists", authorizations.authorizationCallBack);
-
-
-
-
 app.use("/", router);
 app.use('/profile-images', express.static('public/profile-images'));
 
@@ -47,8 +42,10 @@ app.post('/users/:username/logout', (req, res) => exceptionHandler.exceptionWrap
 //Get public user data
 app.get('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.getUserDetails, req, res));
 
+//Delete user
 app.delete('/users/:username', (req, res) => exceptionHandler.exceptionWrapper(users.deleteUser, req, res));
 
+//SECURITY
 router.use("/users/:username", (req, res, next) => {
     if(req.method === "GET" || req.params.username === "login" || req.params.username === "register"){
         next('route');
@@ -81,6 +78,8 @@ app.put('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWr
 //Delete playlist
 app.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
 
+//SECURITY
+router.use("/users/:username/playlists", authorizations.authorizationCallBack);
 
 //#####################################################
 // MOVIES
@@ -107,5 +106,15 @@ app.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWr
 
 //Delete movie review
 app.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.deleteMovieReview, req, res));
+
+//SECURITY
+router.use("/movies/:movieId/reviews", (req,res,next) => {
+    if (req.method==="GET") {
+        next('route');
+    }
+    else {
+        authorizations.authorizationCallBack(req,res,next);
+    }
+});
 
 module.exports = app;
