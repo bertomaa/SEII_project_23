@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../app");
+const {app,routerApiV1} = require("../app");
 const dbAdapter = require('../libs/dbAdapter');
 
 const testConnect = async(done) => {

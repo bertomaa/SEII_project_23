@@ -8,6 +8,7 @@ getMovieData = async (req, res) => {
         throw new BadRequestException();
     if(! await dataChecker.existsDBField("Movies", "imdb_title_id", movieId))
         throw new NotFoundException();
+        
     let ret = await adapterGetMovieDetails(movieId);
     res.status(200).send(ret);
 }

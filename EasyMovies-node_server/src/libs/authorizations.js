@@ -16,18 +16,18 @@ const authorizationCallBack = async (req, res, next) => {
         const uuid = req.cookies.sessionId;
         if (dataChecker.checkFieldsNull([uuid]))
             res.status(400).send();
-        console.log("ci sono i cookie")
+        //console.log("ci sono i cookie")
         dbAdapter.checkUuid(username, uuid).then(r => {
             if (r) {
                 // console.log("next!");
                 next('route');
             } else {
-                console.log("uuid non valido");
+                //console.log("uuid non valido");
                 res.status(401).send();
             }
         })
     } else {
-        console.log("uuid non presente")
+        //console.log("uuid non presente")
         res.status(401).send();
     }
 }
