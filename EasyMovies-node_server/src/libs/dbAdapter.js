@@ -226,6 +226,12 @@ adapterGetMovieDetails = async (movieId) => {
     }, true)
 }
 
+adapterGetHomepageMovies = async () => {
+    return new Promise(async (resolve, reject) => {
+        return await dbo.collection("Movies").find({}).sort({"imdb_title_id": -1}).limit(30).toArray((queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
+    }).catch((e) => { throw new exceptionHandler.InternalServerErrorException() });
+}
+
 
 //#####################################################
 // REVIEWS

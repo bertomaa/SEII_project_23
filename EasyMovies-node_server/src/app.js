@@ -46,7 +46,7 @@ app.use('/profile-images', express.static('public/profile-images'));
 
 
 routerApiV1.get('/', (req, res) => {
-    res.send('home page');
+    res.send('live');
 });
 
 //#####################################################
@@ -111,6 +111,9 @@ authorizationRouter.use("/users/:username/playlists", authorizations.authorizati
 
 //Get movie data
 routerApiV1.get('/movies/:movieId', (req, res) => exceptionHandler.exceptionWrapper(movies.getMovieData, req, res));
+
+//Get catalog
+routerApiV1.get('/catalog/:catalogName', (req, res) => exceptionHandler.exceptionWrapper(movies.getCatalogRouting, req, res));
 
 
 //#####################################################
