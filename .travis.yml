@@ -7,3 +7,6 @@ script:
   - cd EasyMovies-node_server
   - npm install
   - npm run test
+branches:
+  only:
+  - main
