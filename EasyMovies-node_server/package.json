@@ -4,7 +4,7 @@
     "description": "SEII_project_23",
     "main": "index.js",
     "scripts": {
-        "test": "jest --detectOpenHandles",
+        "test": "jest --detectOpenHandles --forceExit",
         "start": "NODE_ENV=development nodemon src/server.js",
         "prod": "node src/server.js",
         "start-windows": "nodemon src/server.js"
