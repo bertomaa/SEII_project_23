@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: EasyMovies API
-  version: ""
-  description: ""
+  version: "1.0"
+  description: "API per applicazione EasyMovies"
 paths:
   /users/register:
     post:
@@ -442,7 +442,7 @@ paths:
       summary: Get Catalog Movies List
       operationId: Get Catalog Movies List
 servers:
-  - url: https://localhost:5000/
+  - url: https://localhost:5000/api/v1/
 components:
   schemas:
     UserCredentials:
