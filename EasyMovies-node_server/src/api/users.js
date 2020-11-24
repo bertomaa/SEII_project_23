@@ -85,6 +85,9 @@ getUserDetails = async (req, res) => {
   const details = await adapterGetUserDetails(username);
   if (details) {
     delete details['password-hash'];
+    delete details['_id'];
+    if(details.sessions)
+      delete details['sessions'];
     res.status(200).send(details);
   } else
     throw new NotFoundException();
