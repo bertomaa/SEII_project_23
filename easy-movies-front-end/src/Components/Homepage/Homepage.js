@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Axios from 'axios';
 import DisplayMovies from '../DisplayMovies/DisplayMovies';
+import { Spinner } from 'Components/Commons/Commons';
 
 export default function Homepage() {
 
@@ -17,7 +18,7 @@ export default function Homepage() {
     }, []);
 
     return (<>
-        {isLoading ? "Loading" : <DisplayMovies movies={movies} />}
+        {isLoading ? <div style={{paddingTop: "80px", height: "90vh"}}><Spinner size={400} /></div> : <DisplayMovies movies={movies} />}
     </>
     )
 }

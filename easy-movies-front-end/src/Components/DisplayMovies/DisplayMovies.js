@@ -3,6 +3,8 @@ import style from "./DisplayMovies.module.css"
 import { Link } from 'react-router-dom';
 import ReactImageAppear from 'react-image-appear';
 import Axios from 'axios';
+import { Spinner } from 'Components/Commons/Commons';
+import classNames from 'classnames';
 
 function Movie(props) {
     const m = props.movie
@@ -19,8 +21,8 @@ function Movie(props) {
     }, []);
 
     return (
-        isLoading ? <div>Loading</div> :
-            <Link to={"/MovieDetails/" + m.id} style={{ textDecoration: 'none' }}>
+        isLoading ? <div className={classNames(style.movieContainer, style.movieContainerLoading)} ><Spinner size={50}/></div> :
+            <Link to={"/MovieDetails/" + m.imdb_title_id} style={{ textDecoration: 'none' }}>
                 <div className={style.movieContainer}>
                     <ReactImageAppear
                         src={"https://image.tmdb.org/t/p/w500/" + pathUrl}
