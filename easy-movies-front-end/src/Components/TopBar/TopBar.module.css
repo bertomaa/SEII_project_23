@@ -1,0 +1,24 @@
+.topBarWrapper {
+    width: 100%;
+    justify-content: flex-start;
+    height: 60px;
+    align-items: center;
+    background-color: black;
+    position: fixed;
+    z-index: 2;
+}
+
+.topBarElement {
+    list-style: none;
+    color: white;
+    font-size: 1.5em;
+    font-weight: 300;
+    text-decoration: none;
+    transition: all .1s ease-in-out;
+    margin: 0 20px;
+}
+
+.topBarElement:hover {
+    border-bottom: 1px solid white;
+    transform: scale(1.1);
+}

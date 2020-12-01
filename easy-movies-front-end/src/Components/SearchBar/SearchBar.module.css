@@ -1,0 +1,14 @@
+.searchBar {
+    flex-grow: 1;
+    height: 50px;
+    border: 2px solid black;
+    border-radius: 10px;
+    font-size: 25px;
+    padding-left: 15px;
+}
+
+@media only screen and (max-width: 1000px) {
+    .searchBar {
+        width: 100%;
+    }
+}

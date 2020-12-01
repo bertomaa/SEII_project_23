@@ -37,3 +37,19 @@
         transform: rotate(360deg);
     }
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* background-color: #334; */
+    background-image: linear-gradient(-225deg, #CBBACC 0%, #2580B3 100%);
+    font-family: 'Montserrat', sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
