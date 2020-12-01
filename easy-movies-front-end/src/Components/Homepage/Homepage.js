@@ -10,8 +10,7 @@ export default function Homepage() {
 
     useEffect(() => {
         setIsLoading(true)
-        Axios.get(`http://localhost:5000/api/v1/catalog/homepage`).then(res => {
-            console.log(res.data)
+        Axios.get(`${process.env.API_BASE_URL}/api/v1/catalog/homepage`).then(res => {
             setMovies(res.data)
             setIsLoading(false)
         })
