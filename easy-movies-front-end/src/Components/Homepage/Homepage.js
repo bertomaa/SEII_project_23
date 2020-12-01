@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Axios from 'axios';
 import DisplayMovies from '../DisplayMovies/DisplayMovies';
-import { Spinner } from 'Components/Commons/Commons';
+import { Spinner } from '../Commons/Commons';
 
 export default function Homepage() {
 
@@ -10,7 +10,7 @@ export default function Homepage() {
 
     useEffect(() => {
         setIsLoading(true)
-        Axios.get(`${process.env.API_BASE_URL}/api/v1/catalog/homepage`).then(res => {
+        Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v1/catalog/homepage`).then(res => {
             setMovies(res.data)
             setIsLoading(false)
         })

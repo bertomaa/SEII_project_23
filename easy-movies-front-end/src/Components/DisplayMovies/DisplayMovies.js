@@ -3,7 +3,7 @@ import style from "./DisplayMovies.module.css"
 import { Link } from 'react-router-dom';
 import ReactImageAppear from 'react-image-appear';
 import Axios from 'axios';
-import { Spinner } from 'Components/Commons/Commons';
+import { Spinner } from '../Commons/Commons';
 import classNames from 'classnames';
 
 function Movie(props) {
@@ -14,7 +14,7 @@ function Movie(props) {
 
     useEffect(() => {
         setIsLoading(true)
-        Axios.get(`https://api.themoviedb.org/3/movie/${m.imdb_title_id}?api_key=${process.env.IMDB_API_KEY}&language=en-US`).then(res => {
+        Axios.get(`https://api.themoviedb.org/3/movie/${m.imdb_title_id}?api_key=${process.env.REACT_APP_IMDB_API_KEY}&language=en-US`).then(res => {
             setPathUrl(res.data.poster_path);
             setIsLoading(false)
         }).catch(e=>{console.log(m.imdb_title_id)})
