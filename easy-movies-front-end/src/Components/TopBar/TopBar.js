@@ -1,32 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import topBarStyle from "./TopBar.module.css"
+import styles from "./TopBar.module.css"
 import SearchBar from '../SearchBar/SearchBar';
-import sideBarStyle from "./SideBar.module.css"
-import { MenuOutlined } from '@ant-design/icons';
+import { HomeFilled, HomeOutlined, MenuOutlined } from '@ant-design/icons';
 import FlexView from 'react-flexview/lib';
 import Avatar from 'antd/lib/avatar/avatar';
 import { Popover } from 'antd';
+import classNames from 'classnames';
 
 
 export default function TopBar(props) {
 
 	const size = useWindowSize();
-	const [version, setVersion] = useState("TOPBAR");
-
-	const [showSideBar, setShowSideBar] = useState(true);
+	const [mobile, setMobile] = useState(false);
 
 	useEffect(() => {
-		if (size.width < 600)
-			setVersion("SIDEBAR")
-		else
-			setVersion("TOPBAR")
-		setShowSideBar(false)
+		setMobile(size.width < 600)
 	}, [size])
-
-	function sideBar() {
-		setShowSideBar(!showSideBar)
-	}
 
 	const content = (
 		<div>
@@ -37,35 +27,15 @@ export default function TopBar(props) {
 
 	return (
 		<>
-			{
-				version === "TOPBAR" ?
-					<FlexView className={topBarStyle.topBarWrapper}>
-						<Link to="/">
-							<li className={topBarStyle.topBarElement}>Easy Movies</li>
-						</Link>
-						<SearchBar onChange={props.onChange} />
-						<Popover content={content} title={"account name"}>
-							<Avatar style={{ margin: "0 20px", width: "40px", height: "40px" }} >A</Avatar>
-						</Popover>
-					</FlexView>
-					:
-					<ul className={`${sideBarStyle.topBar}`}>
-						<li className={sideBarStyle.li}>
-							<MenuOutlined onClick={sideBar} className={sideBarStyle.bars} />
-							{/* <img src={bars} alt="menu" className={sideBarStyle.bars} onClick={sideBar} /> */}
-							<div className={sideBarStyle.SearchBarContainer}><SearchBar onChange={props.onChange} /></div>
-
-						</li>
-					</ul>
-			}
-			{
-				showSideBar &&
-				<ul className={sideBarStyle.optionsContainer}>
-					<Link to="/">
-						<li className={topBarStyle.topBarElement}>Homepage</li>
-					</Link>
-				</ul>
-			}
+			<FlexView className={classNames(styles.topBarWrapper, {[styles.topBarWrapperMobile]: mobile})}>
+				<Link to="/" className={styles.topBarElement}>
+					{mobile ? <HomeFilled style={{color: "white", fontSize: "24px"}}/> : <div className={styles.topBarElement}>Easy Movies</div>}
+				</Link>
+				<SearchBar onChange={props.onChange} mobile={mobile}/>
+				<Popover content={content} title={"account name"}>
+					<Avatar className={classNames(styles.topBarElement, styles.accountIcon, {[styles.accountIconMobile]: mobile})} >A</Avatar>
+				</Popover>
+			</FlexView>
 		</>
 
 	)

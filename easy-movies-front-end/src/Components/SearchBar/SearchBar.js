@@ -1,10 +1,11 @@
+import classNames from 'classnames';
 import React from 'react'
-import style from "./SearchBar.module.css"
+import styles from "./SearchBar.module.css"
 
 function SearchBar(props) {
     return (
         <input
-            className={style.searchBar}
+            className={classNames(styles.searchBar, {[styles.searchBarMobile]: props.mobile})}
             type="text"
             placeholder={"Type a movie..."}
             
