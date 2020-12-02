@@ -4,11 +4,13 @@ import {
   Route,
 } from "react-router-dom";
 import Homepage from "./Components/Homepage/Homepage"
+import MovieDetails from './Components/MovieDetails/MovieDetails';
 
 function App() {
   return (
     <Router>
         <Route exact path="/" component={Homepage}></Route>
+        <Route path="/movies/:movieId" component={MovieDetails}></Route>
     </Router>
 );
 }
