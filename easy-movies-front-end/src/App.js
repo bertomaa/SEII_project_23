@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import Homepage from "./Components/Homepage/Homepage"
 import MovieDetails from './Components/MovieDetails/MovieDetails';
+require('dotenv').config();
 
 function App() {
   return (
