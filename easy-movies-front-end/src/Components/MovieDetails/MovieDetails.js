@@ -1,7 +1,54 @@
-import React, { useState, useEffect, useContext } from 'react'
-import style from "./MovieDetails.module.css"
+import React, { useState, useEffect, useContext } from 'react';
+import style from "./MovieDetails.module.css";
+import Axios from 'axios';
 
-export default function MovieDetails() {
+export default function MovieDetails({match}) {
+    
+    var _ = require('lodash');
+    
+    const [movie, setMovie] = useState({});
+    const [trailer, setTrailer] = useState("");
+    const [poster, setPoster] = useState("");
+
+    const [isLoadingPoster, setIsLoadingPoster] = useState(true)
+    const [isLoadingMovie, setIsLoadingMovie] = useState(true)
+    const [isLoadingTrailer, setIsLoadingTrailer] = useState(true)
+
+    useEffect(() => {
+        setIsLoadingMovie(true)
+        setIsLoadingTrailer(true)
+        setIsLoadingPoster(true)
+        Axios.get(`http://localhost:5000/api/v1/movies/${match.params.movieId}`).then((res) => {
+            console.log("==================================================================================");
+            console.log(res);
+            let tmp = {};
+            tmp.title = _.get(res.data, "title", "Titolo sconosciuto");
+            tmp.runtime = _.get(res.data, "runtime", "sconosciuta");
+            tmp.release_date = _.get(res.data, "date_published", "sconosciuta");
+            tmp.vote_average = _.get(res.data, "vote_average", -1);
+            tmp.overview = _.get(res.data, "description", "Trama sconosciuta");
+            tmp.genres = _.get(res.data, "genres", []);
+            setMovie(tmp)
+            setIsLoadingMovie(false)
+        }).catch(e=>console.log(e))
+
+        Axios.get(`https://api.themoviedb.org/3/movie/${match.params.movieId}?api_key=${process.env.REACT_APP_API_KEY}&language=ita`).then((res) => {
+            setPoster(_.get(res.data, "poster_path"));
+            setIsLoadingPoster(false)
+        })
+
+        Axios.get(`https://api.themoviedb.org/3/movie/${match.params.movieId}/videos?api_key=${process.env.REACT_APP_API_KEY}&language=ita`).then((res) => {
+            let data=res.data.results.filter(r=>r.type==="Trailer");
+            console.log(res)
+            if (data.length>0) {
+                setTrailer("https://www.youtube.com/embed/"+data[0].key);
+                setIsLoadingTrailer(false);
+            }
+            console.log(trailer);
+            
+        })
+
+    }, [match.params.movieId, _]);
 
     const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
         "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
@@ -11,22 +58,11 @@ export default function MovieDetails() {
         return date.substr(-2) + " " + mesi[index] + " " + date.substr(0, 4)
     }
 
-    let trailer = "https://www.youtube.com/embed/Pn0Q4BpYN7c";
-    let movie = {
-        title: "Tenet",
-        poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/iKXqUiLFDgeIGozRR6JYRvFmD5A.jpg",
-        runtime: "150",
-        release_date: "2020-08-26",
-        vote_average: "7,5",
-        overview: "Il tempo per il nostro mondo sta per scadere, ed alcuni agenti entrano in azione per evitare un evento più catastrofico di una terza Guerra Mondiale o di un Olocausto nucleare. Tenet aprirà le porte giuste – e anche alcune sbagliate – per guardare il mondo con occhi nuovi, sentendolo anziché tentare di comprenderlo…",
-        genres: [{name: "Azione"},{name:  "Thriller"},{name:  "Fantascienza"}]
-    };
 
     return (
         <>
-            {
-                <div className={style.container}>
-                    {
+            <div className={style.container}>
+                {!isLoadingTrailer &&
                     <div style={{padding:"0 10vw", marginTop:"20px"}}>
                         <div className={style.videoContainer}>
                             <iframe
@@ -37,9 +73,10 @@ export default function MovieDetails() {
                             </iframe>
                         </div>
                     </div>
-                    }
+                }
+                {!isLoadingPoster && !isLoadingMovie &&
                     <div className={style.movie}>
-                        <img className={style.poster} src={"https://image.tmdb.org/t/p/original/" + movie.poster_path} alt={movie.title} />
+                        <img className={style.poster} src={"https://image.tmdb.org/t/p/original/" + poster} alt={movie.title} />
                         <div className={style.details}>
                             <p className={style.title}>{movie.title}</p>
                             <div className={style.data}>
@@ -53,8 +90,9 @@ export default function MovieDetails() {
                             </div>
                         </div>
                     </div>
+                }
                 </div>
-            }
+            
         </>
     );
 }
