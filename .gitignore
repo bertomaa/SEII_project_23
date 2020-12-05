@@ -1,3 +1,4 @@
 EasyMovies-node_server/package-lock.json
 easy-movies-front-end/package-lock.json
 easy-movies-front-end/.eslintcache
+EasyMovies-node_server/.env
