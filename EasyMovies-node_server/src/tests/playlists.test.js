@@ -3,7 +3,7 @@ const dbAdapter = require('../libs/dbAdapter');
 const testCommons = require('./testCommons');
 
 
-describe("Test the playlists api", () => {
+describe("Test the playlists api V1", () => {
 
     let server, agent;
 
