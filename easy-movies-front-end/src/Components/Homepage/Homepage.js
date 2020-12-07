@@ -11,7 +11,6 @@ export default function Homepage() {
     useEffect(() => {
         setIsLoading(true)
         Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/catalog/homepage`).then(res => {
-            console.log(res)
             setMovies(res.data.results)
             setIsLoading(false)
         })
