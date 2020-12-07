@@ -18,36 +18,27 @@ export default function MovieDetails({match}) {
         setIsLoadingMovie(true)
         setIsLoadingTrailer(true)
         setIsLoadingPoster(true)
-        Axios.get(`http://localhost:5000/api/v1/movies/${match.params.movieId}`).then((res) => {
+        Axios.get(`http://localhost:5000/api/v2/movies/${match.params.movieId}`).then((res) => {
             console.log("==================================================================================");
             console.log(res);
             let tmp = {};
             tmp.title = _.get(res.data, "title", "Titolo sconosciuto");
             tmp.runtime = _.get(res.data, "runtime", "sconosciuta");
-            tmp.release_date = _.get(res.data, "date_published", "sconosciuta");
+            tmp.release_date = _.get(res.data, "release_date", "sconosciuta");
             tmp.vote_average = _.get(res.data, "vote_average", -1);
-            tmp.overview = _.get(res.data, "description", "Trama sconosciuta");
-            tmp.genres = _.get(res.data, "genres", []);
-            setMovie(tmp)
-            setIsLoadingMovie(false)
-        }).catch(e=>console.log(e))
+            tmp.overview = _.get(res.data, "overview", "Trama sconosciuta");
+            tmp.genres = _.get(res.data, "genres", [{name:"Genere sconosciuto"}]);
+            setMovie(tmp);
+            setIsLoadingMovie(false);
 
-        Axios.get(`https://api.themoviedb.org/3/movie/${match.params.movieId}?api_key=${process.env.REACT_APP_API_KEY}&language=ita`).then((res) => {
-            setPoster(_.get(res.data, "poster_path"));
-            setIsLoadingPoster(false)
-        })
-
-        Axios.get(`https://api.themoviedb.org/3/movie/${match.params.movieId}/videos?api_key=${process.env.REACT_APP_API_KEY}&language=ita`).then((res) => {
-            let data=res.data.results.filter(r=>r.type==="Trailer");
-            console.log(res)
-            if (data.length>0) {
-                setTrailer("https://www.youtube.com/embed/"+data[0].key);
+            if (res.data.trailer) {
+                setTrailer(res.data.trailer);
                 setIsLoadingTrailer(false);
             }
-            console.log(trailer);
-            
-        })
 
+            setPoster(_.get(res.data, "poster_path"),"");
+            setIsLoadingPoster(false);
+        }).catch(e=>console.log(e))
     }, [match.params.movieId, _]);
 
     const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
@@ -80,8 +71,8 @@ export default function MovieDetails({match}) {
                         <div className={style.details}>
                             <p className={style.title}>{movie.title}</p>
                             <div className={style.data}>
-                                <p>Durata: {movie.runtime} minuti</p>
-                                <p>Uscita: {showDate(movie.release_date)}</p>
+                <p>Durata: {movie.runtime} {movie.runtime === "sconosciuta"? "" : "minuti"}</p>
+                                <p>Uscita: {movie.release_date === "sconosciuta" ? movie.release_date : showDate(movie.release_date)}</p>
                             </div>
 
                             <p className={style.overview}>{movie.overview}</p>
