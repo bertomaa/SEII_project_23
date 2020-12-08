@@ -1,0 +1,15 @@
+.deleteButton {
+    transition: all .4s ease-in-out;
+}
+
+.deleteButton:hover {
+    color: lightcoral;
+}
+
+.editButton {
+    transition: all .4s ease-in-out;
+}
+
+.editButton:hover {
+    color: lightskyblue;
+}
