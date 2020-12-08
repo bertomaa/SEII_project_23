@@ -1,4 +1,5 @@
 const exceptionHandler = require('./exceptionHandler');
+const tmdbApi = require('./tmdbApi');
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -220,16 +221,25 @@ adapterEditPlaylistName = async (username, oldName, newName) => {
 //#####################################################
 
 
-adapterGetMovieDetails = async (movieId) => {
+adapterGetMovieDetailsV1 = async (movieId) => {
     return await readQueryWrapper("Movies", {
         "imdb_title_id": movieId,
     }, true)
 }
 
-adapterGetHomepageMovies = async () => {
+adapterGetHomepageMoviesV1 = async () => {
     return new Promise(async (resolve, reject) => {
         return await dbo.collection("Movies").find({}).sort({"imdb_title_id": -1}).limit(30).toArray((queryErr, queryRes) => handleResult(queryErr, queryRes, resolve, reject));
     }).catch((e) => { throw new exceptionHandler.InternalServerErrorException() });
+}
+
+
+adapterGetMovieDetailsV2 = async (movieId) => {
+    return await tmdbApi.getTmdbMovieData(movieId);
+}
+
+adapterGetHomepageMoviesV2 = async () => {
+    return await tmdbApi.getTmdbHomepageMovies();
 }
 
 
