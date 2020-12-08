@@ -3,7 +3,7 @@ const sha256 = require('crypto-js/sha256');
 const dbAdapter = require('../libs/dbAdapter');
 const dataChecker = require('../libs/dataChecker');
 const { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } = require('../libs/exceptionHandler');
-const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
 
 registerUser = async (req, res) => {
   if (process.env.NODE_ENV === "production") { //si cambia nello start di package.json
@@ -47,9 +47,8 @@ loginUser = async (req, res) => {
   const hashedPw = sha256(password).toString();
   const logged = await adapterCheckUserCredentials(username, hashedPw);
   if (logged) {
-    const uuid = uuidv4();
-    await saveUuid(username, uuid);
-    res.cookie("sessionId", uuid, { httpOnly: true });
+    const token = jwt.sign({username: username}, process.env.JWT_SECRET_KEY, {expiresIn: 86400});
+    res.cookie("JWTtoken", token, { httpOnly: true });
     res.status(200).send()
   } else
     throw new UnauthorizedException();
@@ -57,24 +56,22 @@ loginUser = async (req, res) => {
 
 logoutUser = async (req, res) => {
   const username = req.params.username;
-  if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.sessionId]))
+  if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.JWTtoken]))
     throw new BadRequestException();
   if (!(await dataChecker.checkUsername(username)))
     throw new NotFoundException();
-  const uuid = req.cookies.sessionId;
-  await deleteUuid(username, uuid);
-  res.clearCookie('sessionId');
+  res.clearCookie('JWTtoken');
   res.status(200).send();
 }
 
 deleteUser = async (req, res) => {
   const username = req.params.username;
-  if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.sessionId]))
+  if (dataChecker.checkFieldsNull([username, req.cookies]) || dataChecker.checkFieldsNull([req.cookies.JWTtoken]))
     throw new BadRequestException();
   if (!(await dataChecker.checkUsername(username)))
     throw new NotFoundException();
   await adapterDeleteUser(username);
-  res.clearCookie('sessionId');
+  res.clearCookie('JWTtoken');
   res.status(200).send();
 }
 
