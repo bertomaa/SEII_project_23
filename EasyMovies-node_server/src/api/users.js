@@ -4,6 +4,9 @@ const dbAdapter = require('../libs/dbAdapter');
 const dataChecker = require('../libs/dataChecker');
 const { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } = require('../libs/exceptionHandler');
 const jwt = require('jsonwebtoken');
+const fs  = require('fs');
+
+const privateKey = fs.readFileSync('./private.key', 'utf8');
 
 registerUser = async (req, res) => {
   if (process.env.NODE_ENV === "production") { //si cambia nello start di package.json
@@ -47,9 +50,9 @@ loginUser = async (req, res) => {
   const hashedPw = sha256(password).toString();
   const logged = await adapterCheckUserCredentials(username, hashedPw);
   if (logged) {
-    const token = jwt.sign({username: username}, process.env.JWT_SECRET_KEY, {expiresIn: 86400});
+    const token = jwt.sign({username: username}, privateKey, {expiresIn: 86400, algorithm: "RS256"});
     res.cookie("JWTtoken", token, { httpOnly: true });
-    res.status(200).send()
+    res.status(200).json({"JWTtoken": token});
   } else
     throw new UnauthorizedException();
 }
