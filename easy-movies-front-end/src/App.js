@@ -5,24 +5,30 @@ import {
   BrowserRouter as Router,
   Route,
 } from "react-router-dom";
-import Homepage from "./Components/Homepage/Homepage";
 import TopBar from "./Components/TopBar/TopBar.js";
+import Cookies from 'universal-cookie';
 
+export const AuthContext = React.createContext({
+  username: undefined,
+  setUsername: () => {}
+});
 
 function App() {
+  const cookies = new Cookies();
+  
+  const [username, setUsername] = useState(cookies.get("JWTtoken") ? "aaaa" : undefined);
+  const value = { username, setUsername };
 
-  const [keyword, setKeyword] = useState("");
 
   return (
-    <>
-    <div className={style.background} />
-    <Router>
-      <Route path="/"><TopBar onChange={setKeyword} /></Route>
-      <Route exact path="/" component={Homepage}></Route>
-      {/* <Route path="/search"><SearchMovies keyword={keyword} /></Route>
+    <AuthContext.Provider value={value}>
+      <div className={style.background} />
+      <Router>
+        <Route path="/"><TopBar /></Route>
+        {/* <Route path="/search"><SearchMovies keyword={keyword} /></Route>
       <Route exact path="/MovieDetails/:id" component={MovieDetails} /> */}
-    </Router>
-    </>
+      </Router>
+    </AuthContext.Provider>
   );
 }
 
