@@ -3,6 +3,9 @@ const express = require('express');
 const dbAdapter = require('./dbAdapter');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
+const fs  = require('fs');
+
+const publicKey = fs.readFileSync('./public.key', 'utf8');
 
 const authorizationCallBack = async (req, res, next) => {
     const username = req.params.username || req.body.username;
@@ -17,7 +20,7 @@ const authorizationCallBack = async (req, res, next) => {
         if (dataChecker.checkFieldsNull([token]))
             res.status(400).send();
         //console.log("ci sono i cookie");
-        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, publicKey, {algorithms: ["RS256"]}, (err, decoded) => {
             if (err) {
                 //console.log("token non valido");
                 return res.status(401).send();		
