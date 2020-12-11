@@ -1,0 +1,13 @@
+.title {
+    font-size: 5rem;
+    color: black;
+    margin-right: 2rem;
+}
+
+.mainbody {
+    margin: 2rem;
+}
+
+.spacedContainer>* {
+    margin-right: 1rem;
+}
