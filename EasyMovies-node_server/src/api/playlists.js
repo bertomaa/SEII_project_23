@@ -9,14 +9,31 @@ getPlaylists = async (req, res) => {
 
   if (!playlists)
     throw new NotFoundException();
-  // console.log(playlists);
   let i = 0
   for await (let p of playlists) {
     ret[i] = { playlistName: p.name, movies: [] };
     for await (let m of p.movies) {
-      let toAdd = await adapterGetMovieDetails(m);
+      let toAdd = await adapterGetMovieDetailsV1(m);
       toAdd ? ret[i].movies.push(toAdd) : null;
-      // console.log(toAdd.title);
+    }
+    i++;
+  };
+  res.status(200).send(ret);
+}
+
+getPlaylistsV2 = async (req, res) => {
+  const username = req.params.username;
+  let ret = [];
+  const playlists = await adapterGetPlaylists(username);
+
+  if (!playlists)
+    throw new NotFoundException();
+  let i = 0
+  for await (let p of playlists) {
+    ret[i] = { playlistName: p.name, movies: [] };
+    for await (let m of p.movies) {
+      let toAdd = await adapterGetMovieDetailsV2(m);
+      toAdd ? ret[i].movies.push(toAdd) : null;
     }
     i++;
   };
@@ -100,6 +117,7 @@ editPlaylistName = async (req, res) => {
 
 module.exports = {
   getPlaylists,
+  getPlaylistsV2,
   addMovieToPlaylist,
   removeMovieFromPlaylist,
   createPlaylist,

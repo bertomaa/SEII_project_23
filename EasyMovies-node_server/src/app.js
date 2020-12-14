@@ -110,6 +110,11 @@ routerApiV1.put('/users/:username/playlists', (req, res) => exceptionHandler.exc
 //Delete playlist
 routerApiV1.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
 
+//Version 2
+
+//Get user playlists
+routerApiV2.get('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.getPlaylistsV2, req, res));
+
 //SECURITY
 authorizationRouter.use("/users/:username/playlists", authorizations.authorizationCallBack);
 

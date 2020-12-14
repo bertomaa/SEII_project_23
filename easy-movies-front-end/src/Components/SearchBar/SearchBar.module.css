@@ -1,0 +1,13 @@
+.searchBar {
+    flex-grow: 1;
+    height: 50px;
+    border: 2px solid black;
+    border-radius: 10px;
+    font-size: 18px;
+    padding-left: 15px;
+    width: 100%;
+}
+
+.searchBarMobile {
+    height: 44px;
+}
