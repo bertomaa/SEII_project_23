@@ -118,7 +118,7 @@ export default function TopBar(props) {
 			<div style={{ height: "10px" }} />
 			<Input.Password value={passwordLogin} placeholder="password" type="password" style={{ margin: "10 10px" }} onChange={e => setPasswordLogin(e.target.value)} />
 			<Divider />
-			<Button type="primary" style={{ width: "100%" }} onClick={login} disabled={!(usernameFormLogin && passwordLogin)}>Accedi</Button>
+			<Button type="primary" style={{ width: "100%" }} onClick={()=>login()} disabled={!(usernameFormLogin && passwordLogin)}>Accedi</Button>
 		</FlexView>
 	);
 

@@ -13,3 +13,10 @@
 .editButton:hover {
     color: lightskyblue;
 }
+
+.review {
+    background: rgba(0, 0, 0, 0.18);
+    padding: 0 10px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 18px;
+}

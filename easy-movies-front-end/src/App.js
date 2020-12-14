@@ -11,7 +11,6 @@ import TopBar from "./Components/TopBar/TopBar.js";
 import Cookies from 'universal-cookie';
 import Homepage from "./Components/Homepage/Homepage";
 import Particles from 'react-particles-js';
-import Playlists from "./Components/Playlists/Playlists";
 import axios from 'axios';
 var jwt = require('jsonwebtoken');
 require('dotenv').config()
