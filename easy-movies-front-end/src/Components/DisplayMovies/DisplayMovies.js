@@ -14,7 +14,7 @@ function Movie(props) {
 
     const [over, setOver] = useState(false);
     return (
-        <Link to={"/MovieDetails/" + m.id} style={{ textDecoration: 'none' }} key={m.id}>
+        <Link to={"/movies/" + m.id} style={{ textDecoration: 'none' }} key={m.id}>
             <div className={style.movieContainer} onMouseEnter={() => setOver(true)} onMouseLeave={() => setOver(false)}>
                 <ReactImageAppear
                     src={"https://image.tmdb.org/t/p/w500/" + m.poster_path}

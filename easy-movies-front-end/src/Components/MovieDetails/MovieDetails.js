@@ -3,6 +3,7 @@ import style from "./MovieDetails.module.css";
 import Axios from 'axios';
 
 export default function MovieDetails({ match }) {
+    console.log(match.params)
 
     var _ = require('lodash');
 
@@ -18,7 +19,7 @@ export default function MovieDetails({ match }) {
         setIsLoadingMovie(true)
         setIsLoadingTrailer(true)
         setIsLoadingPoster(true)
-        Axios.get(`http://localhost:5000/api/v2/movies/${match.params.movieId}`).then((res) => {
+        Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${match.params.movieId}`).then((res) => {
             let tmp = {};
             tmp.title = _.get(res.data, "title", "Titolo sconosciuto");
             tmp.runtime = _.get(res.data, "runtime", "sconosciuta");
@@ -59,6 +60,7 @@ export default function MovieDetails({ match }) {
                     <div style={{ padding: "0 10vw", marginTop: "20px" }}>
                         <div className={style.videoContainer}>
                             <iframe
+                                title={trailer}
                                 src={trailer}
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
