@@ -10,6 +10,7 @@
         "axios": "^0.21.0",
         "classnames": "^2.2.6",
         "dotenv": "^8.2.0",
+        "lodash": "^4.17.20",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
         "react-router": "^5.2.0",
