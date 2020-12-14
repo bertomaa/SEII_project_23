@@ -6,16 +6,6 @@ const { BadRequestException, ConflictException, InternalServerErrorException, No
 const { v4: uuidv4 } = require('uuid');
 
 registerUser = async (req, res) => {
-  if (process.env.NODE_ENV === "production") { //si cambia nello start di package.json
-    if (!req.files || !req.files.img) {
-      throw new BadRequestException();
-    }
-    req.files.img.mv(`../resources/profile_imgs/${req.body.username}.jpg`, function (err) {
-      if (err)
-        throw new InternalServerErrorException();
-    });
-  }
-
   const username = req.body.username;
   const password = req.body.password;
   const name = req.body.name;
@@ -34,6 +24,20 @@ registerUser = async (req, res) => {
   const created = await adapterCreateUser(user).catch(e => console.log("Error: user already exists"));
   if (!created)
     throw new InternalServerErrorException();
+  if (process.env.NODE_ENV === "production") { //si cambia nello start di package.json
+    if (!req.body.image) {
+      throw new BadRequestException();
+    }
+    var base64Data = req.body.image.replace(/^data:image\/jpeg;base64,/, "");
+    fs.writeFile(`public/profile-images/${req.body.username}.jpg`, base64Data, 'base64', function (err) {
+      console.log(err);
+      throw new InternalServerErrorException();
+    });
+    // req.files.img.mv(`../resources/profile_imgs/${req.body.username}.jpg`, function (err) {
+    //   if (err)
+    //     throw new InternalServerErrorException();
+    // });
+  }
   res.status(201).send()
 }
 
