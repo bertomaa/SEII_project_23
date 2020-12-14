@@ -7,14 +7,9 @@ import {
 } from "react-router-dom";
 import TopBar from "./Components/TopBar/TopBar.js";
 import Cookies from 'universal-cookie';
+import Homepage from "./Components/Homepage/Homepage";
 var jwt = require('jsonwebtoken');
-
-const publicKey = `-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBmLWXNgo2w4WkuqR3ieJa/KV3
-InwwHp8fd+7DmHas1u/vuE2C/DJWOxNydCcrH7N5GjZmlfZUeGUq6WplbXFAkmLF
-V8wixqxdJmVTBxRDvJU9+d85cC063wVFyt2HQwwmhNATwCJXfynMcQ7WKcmg+KZB
-9MKbzV3cubBTtbc/VwIDAQAB
------END PUBLIC KEY-----`
+require('dotenv').config()
 
 export const AuthContext = React.createContext({
   username: undefined,

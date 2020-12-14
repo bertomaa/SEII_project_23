@@ -10,15 +10,17 @@ const authorizations = require("./libs/authorizations");
 const apiVersionManager = require('express-api-version-manager');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 
 console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
+console.log("USING API KEY    : " + process.env.TMDB_API_KEY);
 
 const app = express();
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -34,25 +36,26 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 authorizationRouter.use("/users/:username/playlists", authorizations.authorizationCallBack);
 
 app.use('/api/:apiVersion', apiVersionManager({
-    apiVersionParamName: 'apiVersion',
-    versions: {
-      v1: {
-        router: routerApiV1
-      },
-      v2: {
-        router: routerApiV2
-      }
-      }
+  apiVersionParamName: 'apiVersion',
+  versions: {
+    v1: {
+      router: routerApiV1
+    },
+    v2: {
+      router: routerApiV2
     }
-  ));
+  }
+}
+));
 
 
 routerApiV1.use("/", authorizationRouter);
+routerApiV2.use("/", authorizationRouter);
 app.use('/profile-images', express.static('public/profile-images'));
 
 
 routerApiV1.get('/', (req, res) => {
-    res.send('live');
+  res.send('live');
 });
 
 //#####################################################
@@ -76,12 +79,12 @@ routerApiV1.delete('/users/:username', (req, res) => exceptionHandler.exceptionW
 
 //SECURITY
 authorizationRouter.use("/users/:username", (req, res, next) => {
-    if(req.method === "GET" || req.params.username === "login" || req.params.username === "register"){
-        next('route');
-    }
-    else{
-        authorizations.authorizationCallBack(req, res, next);
-    }
+  if (req.method === "GET" || req.params.username === "login" || req.params.username === "register") {
+    next('route');
+  }
+  else {
+    authorizations.authorizationCallBack(req, res, next);
+  }
 });
 
 //#####################################################
@@ -107,6 +110,11 @@ routerApiV1.put('/users/:username/playlists', (req, res) => exceptionHandler.exc
 //Delete playlist
 routerApiV1.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
 
+//Version 2
+
+//Get user playlists
+routerApiV2.get('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.getPlaylistsV2, req, res));
+
 //SECURITY
 authorizationRouter.use("/users/:username/playlists", authorizations.authorizationCallBack);
 
@@ -114,42 +122,66 @@ authorizationRouter.use("/users/:username/playlists", authorizations.authorizati
 // MOVIES
 //#####################################################
 
+// Version 1
 
 //Get movie data
-routerApiV1.get('/movies/:movieId', (req, res) => exceptionHandler.exceptionWrapper(movies.getMovieData, req, res));
+routerApiV1.get('/movies/:movieId', (req, res) => exceptionHandler.exceptionWrapper(movies.getMovieDataV1, req, res));
 
 //Get catalog
-routerApiV1.get('/catalog/:catalogName', (req, res) => exceptionHandler.exceptionWrapper(movies.getCatalogRouting, req, res));
+routerApiV1.get('/catalog/:catalogName', (req, res) => exceptionHandler.exceptionWrapper(movies.getCatalogRoutingV1, req, res));
 
+//Version 2
+
+//Get movie data
+routerApiV2.get('/movies/:movieId', (req, res) => exceptionHandler.exceptionWrapper(movies.getMovieDataV2, req, res));
+
+//Get catalog
+routerApiV2.get('/catalog/:catalogName', (req, res) => exceptionHandler.exceptionWrapper(movies.getCatalogRoutingV2, req, res));
 
 //#####################################################
 // REVIEWS
 //#####################################################
 
+// Version 1
 
 //Get movie reviews
-routerApiV1.get('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getMovieReviews, req, res));
+routerApiV1.get('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getMovieReviewsV1, req, res));
 
-//Get movie reviews
+//Get user reviews
 routerApiV1.get('/users/:username/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getUserReviews, req, res));
 
 //Create movie review
-routerApiV1.put('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.createMovieReview, req, res));
+routerApiV1.put('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.createMovieReviewV1, req, res));
 
 //Update movie review
-routerApiV1.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.updateMovieReview, req, res));
+routerApiV1.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.updateMovieReviewV1, req, res));
 
 //Delete movie review
-routerApiV1.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.deleteMovieReview, req, res));
+routerApiV1.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.deleteMovieReviewV1, req, res));
+
+// Version 2
+
+//Get movie reviews
+routerApiV2.get('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.getMovieReviewsV2, req, res));
+
+//Create movie review
+routerApiV2.put('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.createMovieReviewV2, req, res));
+
+//Update movie review
+routerApiV2.patch('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.updateMovieReviewV2, req, res));
+
+//Delete movie review
+routerApiV2.delete('/movies/:movieId/reviews', (req, res) => exceptionHandler.exceptionWrapper(reviews.deleteMovieReviewV2, req, res));
+
 
 //SECURITY
-authorizationRouter.use("/movies/:movieId/reviews", (req,res,next) => {
-    if (req.method==="GET") {
-        next('route');
-    }
-    else {
-        authorizations.authorizationCallBack(req,res,next);
-    }
+authorizationRouter.use("/movies/:movieId/reviews", (req, res, next) => {
+  if (req.method === "GET") {
+    next('route');
+  }
+  else {
+    authorizations.authorizationCallBack(req, res, next);
+  }
 });
 
-module.exports = {app,routerApiV1};
+module.exports = { app, routerApiV1, routerApiV2 };
