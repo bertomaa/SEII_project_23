@@ -87,7 +87,6 @@ export default function MovieDetails({ match }) {
                     </div>
                 }
             <TopReviews movieId={match.params.movieId}/>
-            <UserReviews user={"a1"}/>
             </div>
         </>
     );
