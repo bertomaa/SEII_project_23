@@ -115,7 +115,7 @@ function Playlists() {
     ]);
     setIsLoading(false);
     //loadPlaylists();
-  }, [])
+  }, []);
 
   const loadPlaylists = async () => {
     /*
