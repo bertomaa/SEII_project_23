@@ -13,57 +13,34 @@ export function TopReviews(props) {
 
     const [loading, setLoading] = useState(true);
 
-    const [children, setChildren] = useState([])
+    const [children] = useState([])
 
     const { username, setUsername } = useContext(AuthContext);
 
     const [collapsed, setCollapsed] = useState(true)
 
     useEffect(() => {
-        console.log(collapsed)
         if (loading) {
             children.length = 0;
-            // if (collapsed) {
-                // Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
-                //     res.data.forEach((r) => {
-                //         children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} owner={username === r.username} />);
-                //     });
-                //     const rIndex = res.data.slice(0, 3).findIndex((e) => e.username === username);
-                //     const reviewToAdd = res.data.find((e) => e.username === username);
-                //     if (rIndex >= 0) {
-                //         children.splice(rIndex, 1)
-                //     } else if (reviewToAdd) {
-                //         children.pop();
-                //     }
-                //     if (reviewToAdd) {
-                //         children.push(<Review owner review={reviewToAdd} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
-                //     } else {
-                //         children.push(<Review username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
-                //     }
-                //     children.reverse();
-                //     setLoading(false);
-                // });
-            // } else {
-                Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
-                    res.data.forEach((r) => {
-                        children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} owner={username === r.username} />);
-                    });
-                    const rIndex = res.data.findIndex((e) => e.username === username);
-                    const reviewToAdd = res.data.find((e) => e.username === username);
-                    if (rIndex >= 0) {
-                        children.splice(rIndex, 1)
-                    }
-                    if (reviewToAdd) {
-                        children.push(<Review owner review={reviewToAdd} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
-                    } else {
-                        children.push(<Review username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
-                    }
-                    children.reverse();
-                    setLoading(false);
+            Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
+                res.data.forEach((r) => {
+                    children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} owner={username === r.username} />);
                 });
-            // }
+                const rIndex = res.data.findIndex((e) => e.username === username);
+                const reviewToAdd = res.data.find((e) => e.username === username);
+                if (rIndex >= 0) {
+                    children.splice(rIndex, 1)
+                }
+                if (reviewToAdd) {
+                    children.push(<Review owner review={reviewToAdd} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
+                } else {
+                    children.push(<Review disabled={!username} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
+                }
+                children.reverse();
+                setLoading(false);
+            });
         }
-    }, [props.movieId, loading, username]);
+    }, [props.movieId, loading, username, children]);
 
     return (
         <>
@@ -71,40 +48,53 @@ export function TopReviews(props) {
                 loading ? <Spinner /> : collapsed ? children.slice(0, 4) : children
             }
             {
-                collapsed ? 
-                <Button className={styles.collapsedButton} type="link" onClick={()=>{setCollapsed(false)}}>Mostra tutte le recensioni</Button> 
-                :
-                <Button className={styles.collapsedButton} type="link" onClick={()=>{setCollapsed(true)}}>Mostra meno recensioni</Button> 
-            }
+                children.length > 4 && (collapsed ?
+                    <Button className={styles.collapsedButton} type="link" onClick={() => { setCollapsed(false) }}>Mostra tutte le recensioni</Button>
+                    :
+                    <Button className={styles.collapsedButton} type="link" onClick={() => { setCollapsed(true) }}>Mostra meno recensioni</Button>
+                )}
         </>
     );
 }
 
 export function UserReviews(props) {
-    const [loading, setLoading] = useState(true);
 
-    const [children, setChildren] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [children] = useState([])
+    const { username, setUsername } = useContext(AuthContext);
 
     useEffect(() => {
         if (loading) {
             children.length = 0;
-            Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
-                console.log(res.data)
+            Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${props.user}/reviews`).then(res => {
+                if(res.data.length === 0){
+                    children.push(<p>L'utente non ha ancora scritto alcuna recensione</p>)
+                    setLoading(false)
+                    return;
+                }
                 res.data.forEach((r) => {
-                    console.log(r)
                     children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} />);
                 });
-                const rIndex = children.findIndex((e) => e.username === "aaaa");
+                const rIndex = children.findIndex((e) => e.username === props.user);
                 if (rIndex)
                     children.splice(rIndex, 1)
                 else
                     children.pop();
-                const reviewToAdd = res.data.find((e) => e.username === "aaaa");
-                children.splice(0, 0, <Review review={reviewToAdd} username={"aaaa"} movieId={props.movieId} key={"aaaa"} refresh={() => { setLoading(true) }} />)
+                const reviewToAdd = res.data.find((e) => e.username === props.user);
+                reviewToAdd && children.splice(0, 0, <Review review={reviewToAdd} username={props.user} movieId={props.movieId} key={props.user} refresh={() => { setLoading(true) }} />)
                 setLoading(false);
+            }).catch(e => {
+                switch (e.response.status) {
+                    case 404:
+                        children.push(<p>L'utente cercato non esiste</p>)
+                        break;
+                    default:
+                        children.push(<p>Errore imprevisto</p>)
+                }
+                setLoading(false)
             });
         }
-    }, [props.movieId, loading]);
+    }, [props.movieId, loading, children, props.user]);
 
     return (
         <>
@@ -116,8 +106,11 @@ export function UserReviews(props) {
 }
 
 const Review = (props) => {
+
+    const { username } = useContext(AuthContext);
     const owner = props.owner;
-    const username = props.username;
+    const disabled = !username;
+    const reviewOwner = props.username;
     const movieId = props.movieId;
     const [editing, setEditing] = useState(!props.review);
     const create = !props.review;
@@ -131,16 +124,17 @@ const Review = (props) => {
             <Comment
                 className={styles.review}
                 style={{ color: "white", borderRadius: "16px" }}
-                author={<Link to={"/users/" + username} style={{ fontSize: "18px", color: "white" }}>{username}</Link>}
+                author={<Link to={"/users/" + reviewOwner} style={{ fontSize: "18px", color: "white" }}>{editing ? (username && reviewOwner) : reviewOwner}</Link>}
                 avatar={
                     <Avatar
                         style={{ width: "50px", height: "50px" }}
-                        src={`${process.env.REACT_APP_API_BASE_URL}/profile-images/${username}.jpg`}
+                        src={`${process.env.REACT_APP_API_BASE_URL}/profile-images/${reviewOwner}.jpg`}
                     />
                 }
                 content={editing ?
                     <FlexView column style={{ padding: "10px" }}>
                         <Input
+                            disabled={disabled}
                             placeholder={"Titolo della Recensione"}
                             onChange={(e) => { setReview({ ...review, "title": e.target.value }) }}
                             style={{ width: "50%", marginBottom: "10px" }}
@@ -148,20 +142,21 @@ const Review = (props) => {
 
                         ></Input>
                         <TextArea
+                        disabled={disabled}
                             placeholder={"Contenuto della Recensione"}
                             onChange={(e) => { setReview({ ...review, "content": e.target.value }) }}
                             style={{ marginBottom: "10px" }}
                             defaultValue={review.content}
                         ></TextArea>
                         <Button
-                            disabled={!(review.title !== "" && review.content !== "" && review.rate)}
+                            disabled={!(review.title !== "" && review.content !== "" && review.rate) || disabled}
                             type="primary"
                             onClick={() => {
                                 console.log("🚀 ~ file: Reviews.js ~ line 38 ~ Review ~ create", create);
                                 if (create)
-                                    onCreateReview(review, username, movieId, props.refresh)
+                                    onCreateReview(review, reviewOwner, movieId, props.refresh)
                                 else
-                                    onUpdateReview(review, username, movieId, props.refresh);
+                                    onUpdateReview(review, reviewOwner, movieId, props.refresh);
                                 setEditing(false);
                                 console.log(review);
                             }}
@@ -176,9 +171,9 @@ const Review = (props) => {
                 }
                 datetime={
                     <FlexView style={{ justifyContent: "flex-end", alignItems: "center" }}>
-                        <Rate disabled={!editing} allowHalf onChange={(e) => { setReview({ ...review, rate: e }) }} value={review.rate} />
+                        <Rate disabled={!editing || disabled} allowHalf onChange={(e) => { setReview({ ...review, rate: e }) }} value={review.rate} />
                         {!editing && owner && <EditOutlined onClick={() => { setEditing(true) }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.editButton} />}
-                        {!editing && owner && <DeleteOutlined onClick={() => { onDeleteReview(username, movieId, props.refresh); }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.deleteButton} />}
+                        {!editing && owner && <DeleteOutlined onClick={() => { onDeleteReview(reviewOwner, movieId, props.refresh); }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.deleteButton} />}
                     </FlexView>
                 }
             />

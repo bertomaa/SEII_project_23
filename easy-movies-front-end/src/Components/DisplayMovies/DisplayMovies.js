@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import style from "./DisplayMovies.module.css"
 import { Link } from 'react-router-dom';
 import ReactImageAppear from 'react-image-appear';
-import Axios from 'axios';
-import { Spinner } from '../Commons/Commons';
 import classNames from 'classnames';
-import FlexView from 'react-flexview/lib';
 import { MdPlaylistAdd, MdFavoriteBorder, MdFavorite } from 'react-icons/md';
 import { AiFillClockCircle, AiOutlineClockCircle } from 'react-icons/ai';
 

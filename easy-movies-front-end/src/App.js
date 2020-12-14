@@ -12,7 +12,6 @@ import Cookies from 'universal-cookie';
 import Homepage from "./Components/Homepage/Homepage";
 import Particles from 'react-particles-js';
 import axios from 'axios';
-var jwt = require('jsonwebtoken');
 require('dotenv').config()
 
 axios.defaults.withCredentials = true;
