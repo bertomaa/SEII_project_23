@@ -11,9 +11,7 @@ import TopBar from "./Components/TopBar/TopBar.js";
 import Cookies from 'universal-cookie';
 import Homepage from "./Components/Homepage/Homepage";
 import Particles from 'react-particles-js';
-import Playlists from "./Components/Playlists/Playlists";
 import axios from 'axios';
-var jwt = require('jsonwebtoken');
 require('dotenv').config()
 
 axios.defaults.withCredentials = true;
@@ -67,7 +65,7 @@ const ParticelsBackground = () => (<Particles
       },
       "move": {
         "random": true,
-        "speed": 1,
+        "speed": 2,
         "direction": "top",
         "out_mode": "out"
       }

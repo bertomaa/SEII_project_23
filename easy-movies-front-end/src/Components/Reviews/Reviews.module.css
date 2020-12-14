@@ -1,0 +1,31 @@
+.deleteButton {
+    transition: all .4s ease-in-out;
+}
+
+.deleteButton:hover {
+    color: lightcoral;
+}
+
+.editButton {
+    transition: all .4s ease-in-out;
+}
+
+.editButton:hover {
+    color: lightskyblue;
+}
+
+.review {
+    background: rgba(0, 0, 0, 0.18);
+    padding: 0 10px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 18px;
+}
+
+.collapsedButton {
+    font-size: 20px;
+    color: white;
+}
+
+.collapsedButton:hover {
+    color: lightskyblue;
+}

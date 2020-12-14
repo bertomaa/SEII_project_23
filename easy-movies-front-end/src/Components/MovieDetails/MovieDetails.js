@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import style from "./MovieDetails.module.css";
 import Axios from 'axios';
+import { TopReviews, UserReviews } from '../Reviews/Reviews';
 
 export default function MovieDetails({ match }) {
-    console.log(match.params)
 
     var _ = require('lodash');
 
@@ -86,8 +86,8 @@ export default function MovieDetails({ match }) {
                         </div>
                     </div>
                 }
+            <TopReviews movieId={match.params.movieId}/>
             </div>
-
         </>
     );
 }
