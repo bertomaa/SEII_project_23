@@ -34,7 +34,6 @@ registerUser = async (req, res) => {
     var base64Data = req.body.image.replace(/^data:image\/jpeg;base64,/, "");
     fs.writeFile(`public/profile-images/${req.body.username}.jpg`, base64Data, 'base64', function (err) {
       console.log(err);
-      throw new InternalServerErrorException();
     });
     // req.files.img.mv(`../resources/profile_imgs/${req.body.username}.jpg`, function (err) {
     //   if (err)
