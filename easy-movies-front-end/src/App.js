@@ -66,7 +66,7 @@ const ParticelsBackground = () => (<Particles
       },
       "move": {
         "random": true,
-        "speed": 1,
+        "speed": 2,
         "direction": "top",
         "out_mode": "out"
       }

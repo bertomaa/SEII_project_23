@@ -6,6 +6,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import styles from "./Reviews.module.css";
 import Axios from 'axios';
 import { AuthContext } from '../../App';
+import { Spinner } from '../Commons/Commons';
 const { TextArea } = Input;
 
 export function TopReviews(props) {
@@ -14,38 +15,66 @@ export function TopReviews(props) {
 
     const [children, setChildren] = useState([])
 
-
     const { username, setUsername } = useContext(AuthContext);
 
+    const [collapsed, setCollapsed] = useState(true)
+
     useEffect(() => {
+        console.log(collapsed)
         if (loading) {
             children.length = 0;
-            Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
-                res.data.slice(0, 3).forEach((r) => {
-                    children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} owner={username === r.username} />);
+            // if (collapsed) {
+                // Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
+                //     res.data.forEach((r) => {
+                //         children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} owner={username === r.username} />);
+                //     });
+                //     const rIndex = res.data.slice(0, 3).findIndex((e) => e.username === username);
+                //     const reviewToAdd = res.data.find((e) => e.username === username);
+                //     if (rIndex >= 0) {
+                //         children.splice(rIndex, 1)
+                //     } else if (reviewToAdd) {
+                //         children.pop();
+                //     }
+                //     if (reviewToAdd) {
+                //         children.push(<Review owner review={reviewToAdd} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
+                //     } else {
+                //         children.push(<Review username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
+                //     }
+                //     children.reverse();
+                //     setLoading(false);
+                // });
+            // } else {
+                Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/movies/${props.movieId}/reviews`).then(res => {
+                    res.data.forEach((r) => {
+                        children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} owner={username === r.username} />);
+                    });
+                    const rIndex = res.data.findIndex((e) => e.username === username);
+                    const reviewToAdd = res.data.find((e) => e.username === username);
+                    if (rIndex >= 0) {
+                        children.splice(rIndex, 1)
+                    }
+                    if (reviewToAdd) {
+                        children.push(<Review owner review={reviewToAdd} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
+                    } else {
+                        children.push(<Review username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
+                    }
+                    children.reverse();
+                    setLoading(false);
                 });
-                const rIndex = res.data.slice(0, 4).findIndex((e) => e.username === username);
-                const reviewToAdd = res.data.find((e) => e.username === username);
-                if (rIndex >= 0) {
-                    children.splice(rIndex, 1)
-                } else if(reviewToAdd){
-                    children.pop();
-                }
-                if (reviewToAdd) {
-                    children.push(<Review owner review={reviewToAdd} username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
-                }else{
-                    children.push(<Review username={username} movieId={props.movieId} key={username} refresh={() => { setLoading(true) }} />)
-                }
-                children.reverse();
-                setLoading(false);
-            });
+            // }
         }
     }, [props.movieId, loading, username]);
 
     return (
         <>
             {
-                loading ? "loading" : children
+                loading ? <Spinner /> : collapsed ? children.slice(0, 4) : children
+            }
+            {
+                collapsed ? 
+                <Button className={styles.collapsedButton} type="link" onClick={()=>{setCollapsed(false)}}>Mostra tutte le recensioni</Button> 
+                :
+                <Button className={styles.collapsedButton} type="link" onClick={()=>{setCollapsed(true)}}>Mostra meno recensioni</Button> 
             }
         </>
     );
@@ -80,7 +109,7 @@ export function UserReviews(props) {
     return (
         <>
             {
-                loading ? "loading" : children
+                loading ? <Spinner /> : children
             }
         </>
     );
