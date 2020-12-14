@@ -37,7 +37,7 @@ export default function TopBar(props) {
 	}, [size])
 
 	useEffect(()=>{
-		Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}`).then(res=>{
+		username && Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}`).then(res=>{
 			setNameLogged(res.data.name)
 			setSurnameLogged(res.data.surname)
 		})
@@ -51,7 +51,9 @@ export default function TopBar(props) {
 			"surname": surname,
 			"image": imgBase64,
 		}).then(res => {
-			login();
+			setUsernameFormLogin(usernameForm)
+			setPasswordLogin(password)
+			login(usernameForm, password);
 		}).catch((res) => {
 			switch (res.status) {
 				//TODO: mettere i vari casi
@@ -63,10 +65,10 @@ export default function TopBar(props) {
 		})
 	}
 
-	const login = () => {
+	const login = (u, p) => {
 		Axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/login`, {
-			"username": usernameFormLogin,
-			"password": passwordLogin
+			"username": u ? u : usernameFormLogin,
+			"password": p ? p : passwordLogin
 		}).then(res => {
 			cookies.set('JWTtoken', res.data.JWTtoken, { path: '/' });
 			cookies.set('username', res.data.username, { path: '/' });
@@ -112,9 +114,9 @@ export default function TopBar(props) {
 
 	const loginPopover = (
 		<FlexView column style={{ alignItems: "center" }}>
-			<Input placeholder="username" style={{ margin: "10 10px" }} onChange={e => setUsernameFormLogin(e.target.value)} />
+			<Input value={usernameFormLogin} placeholder="username" style={{ margin: "10 10px" }} onChange={e => setUsernameFormLogin(e.target.value)} />
 			<div style={{ height: "10px" }} />
-			<Input.Password placeholder="password" type="password" style={{ margin: "10 10px" }} onChange={e => setPasswordLogin(e.target.value)} />
+			<Input.Password value={passwordLogin} placeholder="password" type="password" style={{ margin: "10 10px" }} onChange={e => setPasswordLogin(e.target.value)} />
 			<Divider />
 			<Button type="primary" style={{ width: "100%" }} onClick={login} disabled={!(usernameFormLogin && passwordLogin)}>Accedi</Button>
 		</FlexView>
