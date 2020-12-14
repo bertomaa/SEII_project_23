@@ -55,8 +55,9 @@ loginUser = async (req, res) => {
   const logged = await adapterCheckUserCredentials(username, hashedPw);
   if (logged) {
     const token = jwt.sign({username: username}, privateKey, {expiresIn: 86400, algorithm: "RS256"});
-    res.cookie("JWTtoken", token, { httpOnly: true });
-    res.status(200).json({"JWTtoken": token});
+    res.cookie("JWTtoken", token);
+    res.cookie("username", username);
+    res.status(200).json({"JWTtoken": token, "username": username});
   } else
     throw new UnauthorizedException();
 }
@@ -67,6 +68,7 @@ logoutUser = async (req, res) => {
     throw new BadRequestException();
   if (!(await dataChecker.checkUsername(username)))
     throw new NotFoundException();
+  res.clearCookie("username");
   res.clearCookie('JWTtoken');
   res.status(200).send();
 }
@@ -78,6 +80,7 @@ deleteUser = async (req, res) => {
   if (!(await dataChecker.checkUsername(username)))
     throw new NotFoundException();
   await adapterDeleteUser(username);
+  res.clearCookie("username");
   res.clearCookie('JWTtoken');
   res.status(200).send();
 }
