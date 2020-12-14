@@ -23,17 +23,12 @@ const app = express();
 
 // app.use(cors())
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Credentials", true);
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-    if(req.method == "OPTIONS"){
-      console.log(req.method);
-      res.status(200).send()
-    }else
-    next();
-  });
-  
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 let authorizationRouter = express.Router();
 var routerApiV1 = express.Router();
 var routerApiV2 = express.Router();
