@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EasyMovies API
-  version: "1.0"
+  version: "2.0"
   description: "API per applicazione EasyMovies"
 paths:
   /users/register:
@@ -446,7 +446,7 @@ paths:
       summary: Get Catalog Movies List
       operationId: Get Catalog Movies List
 servers:
-  - url: https://localhost:5000/api/v1/
+  - url: https://localhost:5000/api/v2/
 components:
   schemas:
     UserCredentials:
@@ -482,19 +482,39 @@ components:
     Movie:
       type: object
       properties:
-        id:
+        adult:
+          type: boolean
+        backdrop_path:
           type: string
-        title:
+        genre_ids:
+          type: array
+          items:
+            type: integer
+        id:
+          type: integer
+        original_language:
+          type: string
+        original_title:
           type: string
         overview:
           type: string
-        trailerUrl:
+        popularity:
+          type: number
+          format: float
+        poster_path:
           type: string
-        duration:
+        release_date:
           type: string
-        releaseDate:
+        title:
           type: string
-        genre:
+        video:
+          type: boolean
+        vote_average:
+          type: number
+          format: float
+        vote_count:
+          type: integer
+        trailer:
           type: string
     Review:
       type: object
