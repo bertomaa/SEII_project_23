@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import Axios from 'axios';
 import style from "./DisplayMovies.module.css"
 import { Link } from 'react-router-dom';
 import ReactImageAppear from 'react-image-appear';
@@ -8,143 +9,37 @@ import { AiFillClockCircle, AiOutlineClockCircle } from 'react-icons/ai';
 import { CgPlayListRemove } from 'react-icons/cg';
 import Modal from 'antd/lib/modal/Modal';
 import { Button } from 'antd';
+import { AuthContext } from '../../App';
 
 export function Movie(props) {
     const [showPlaylistSelectModal, setShowPlaylistSelectModal] = useState(false);
     const [playlists, setPlaylists] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const { username, setUsername } = useContext(AuthContext);
+
     const m = props.movie;
 
     const isFromPlaylist = props.playlist && props.refreshCallback;
 
     useEffect(async () => {
-        //TODO delete this
-        setPlaylists([
-            {
-                "playlistName": "tp",
-                "movies": [
-                    {
-                        "adult": false,
-                        "backdrop_path": "/jeAQdDX9nguP6YOX6QSWKDPkbBo.jpg",
-                        "genre_ids": [
-                            28,
-                            14,
-                            878
-                        ],
-                        "id": 590706,
-                        "original_language": "en",
-                        "original_title": "Jiu Jitsu",
-                        "overview": "Ogni sei anni, un antico ordine di esperti combattenti di Jiu Jitsu devono affrontare una feroce razza di invasori alieni in una battaglia per difendere la Terra. Per migliaia di anni, le forze che hanno protetto la Terra hanno ottenuto la vittoria... Fino ad ora.",
-                        "popularity": 3199.491,
-                        "poster_path": "/eLT8Cu357VOwBVTitkmlDEg32Fs.jpg",
-                        "release_date": "2020-11-20",
-                        "title": "Jiu Jitsu",
-                        "video": false,
-                        "vote_average": 5.7,
-                        "vote_count": 127
-                    },
-                    {
-                        "adult": false,
-                        "backdrop_path": "/ckfwfLkl0CkafTasoRw5FILhZAS.jpg",
-                        "genre_ids": [
-                            28,
-                            35,
-                            14
-                        ],
-                        "id": 602211,
-                        "original_language": "en",
-                        "original_title": "Fatman",
-                        "overview": "",
-                        "popularity": 2504.473,
-                        "poster_path": "/4n8QNNdk4BOX9Dslfbz5Dy6j1HK.jpg",
-                        "release_date": "2020-11-13",
-                        "title": "Fatman",
-                        "video": false,
-                        "vote_average": 6.1,
-                        "vote_count": 128
-                    }
-                ]
-            },
-            {
-                "playlistName": "tp1",
-                "movies": [
-                ]
-            },
-            {
-                "playlistName": "tp2",
-                "movies": [
-                    {
-                        "adult": false,
-                        "backdrop_path": "/jeAQdDX9nguP6YOX6QSWKDPkbBo.jpg",
-                        "genre_ids": [
-                            28,
-                            14,
-                            878
-                        ],
-                        "id": 590706,
-                        "original_language": "en",
-                        "original_title": "Jiu Jitsu",
-                        "overview": "Ogni sei anni, un antico ordine di esperti combattenti di Jiu Jitsu devono affrontare una feroce razza di invasori alieni in una battaglia per difendere la Terra. Per migliaia di anni, le forze che hanno protetto la Terra hanno ottenuto la vittoria... Fino ad ora.",
-                        "popularity": 3199.491,
-                        "poster_path": "/eLT8Cu357VOwBVTitkmlDEg32Fs.jpg",
-                        "release_date": "2020-11-20",
-                        "title": "Jiu Jitsu",
-                        "video": false,
-                        "vote_average": 5.7,
-                        "vote_count": 127
-                    },
-                    {
-                        "adult": false,
-                        "backdrop_path": "/ckfwfLkl0CkafTasoRw5FILhZAS.jpg",
-                        "genre_ids": [
-                            28,
-                            35,
-                            14
-                        ],
-                        "id": 602211,
-                        "original_language": "en",
-                        "original_title": "Fatman",
-                        "overview": "",
-                        "popularity": 2504.473,
-                        "poster_path": "/4n8QNNdk4BOX9Dslfbz5Dy6j1HK.jpg",
-                        "release_date": "2020-11-13",
-                        "title": "Fatman",
-                        "video": false,
-                        "vote_average": 6.1,
-                        "vote_count": 128
-                    }
-                ]
-            }
-        ]);
-        //loadPlaylists();
-        setIsLoading(false);
+        loadPlaylists();
     }, []);
 
     const deleteMovieFromPlaylist = async () => {
-        /*
-            //TODO get username
-            await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${playlist}`,{ "movieId": m.id }).then(res=>{
-                refreshCallback();
-            });
-        */
+        await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${props.playlist}`, { "movieId": m.id }).then(res => {
+            props.refreshCallback();
+        });
     }
 
     const addMovieToPlaylist = async (playlistName) => {
-        /*
-            //TODO get username
-            await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${playlistName}`,{ "movieId": m.id }).then(res=>{});
-        */
+        await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${playlistName}`, { "movieId": m.id }).then(res => { });
     }
 
     const loadPlaylists = async () => {
-        /*
-          //TODO Get username
-          await Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists`).then((res)=>{
+        await Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists`).then((res) => {
             setPlaylists(res.data);
-          });
-        */
-        setPlaylists([]);
+        });
         setIsLoading(false);
     }
 

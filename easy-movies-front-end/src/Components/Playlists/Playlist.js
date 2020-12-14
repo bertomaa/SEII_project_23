@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Axios from 'axios';
 import Slider from "react-slick";
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
@@ -6,13 +6,13 @@ import styles from "./Playlists.module.css";
 import { Button, Input } from 'antd';
 import { Movie } from '../DisplayMovies/DisplayMovies.js';
 import Modal from 'antd/lib/modal/Modal';
-
-
+import { AuthContext } from '../../App';
 
 const Playlist = ({ playlist, refreshCallback }) => {
   const [newName, setNewName] = useState("");
   const [isEditNameModalVisible, setIsEditNameModalVisible] = useState(false);
   const [isDeletePlaylistModalVisible, setIsDeletePlaylistModalVisible] = useState(false);
+  const { username, setUsername } = useContext(AuthContext);
 
   const slickSettings = {
     dots: false,
@@ -40,28 +40,26 @@ const Playlist = ({ playlist, refreshCallback }) => {
       }
     ]
   };
-  
-  const deletePlaylist = () => {
-    /*
-      //TODO Get username
-      await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists`,{ "playlist": playlist.playlistName }).then(res=>{
-        closeModal();
-        refreshCallback();
-      });
-    */
+
+  const deletePlaylist = async () => {
+
+    await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`, { "playlist": playlist.playlistName }).then(res => {
+      closeModal();
+      refreshCallback();
+    });
+
     closeModal();
     refreshCallback();
   }
-  
-  const editName = () => {
+
+  const editName = async () => {
     if (newName && newName !== "") {
-      /*
-      //TODO Get username
-      await Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${playlist.playlistName}`,{ "newName": newName }).then(res=>{
+
+      await Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${playlist.playlistName}`, { "newName": newName }).then(res => {
         closeModal();
         refreshCallback();
       });
-      */
+
       closeModal();
       refreshCallback();
     }
@@ -76,7 +74,7 @@ const Playlist = ({ playlist, refreshCallback }) => {
     <div>
       <div className={styles.spacedContainer} style={{ display: 'flex', flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
         <h1>{playlist.playlistName}</h1>
-        <Button shape="circle" icon={<EditOutlined />} onClick={()=>setIsEditNameModalVisible(true)} />
+        <Button shape="circle" icon={<EditOutlined />} onClick={() => setIsEditNameModalVisible(true)} />
         <Modal title="Edit Playlist Name"
           visible={isEditNameModalVisible}
           onOk={editName}
@@ -85,21 +83,21 @@ const Playlist = ({ playlist, refreshCallback }) => {
           <br />
           <Input placeholder="Playlist name" defaultValue={playlist.playlistName} onChange={(v) => setNewName(v.target.value)} />
         </Modal>
-        <Button shape="circle" icon={<DeleteOutlined />} onClick={()=>setIsDeletePlaylistModalVisible(true)} />
+        <Button shape="circle" icon={<DeleteOutlined />} onClick={() => setIsDeletePlaylistModalVisible(true)} />
         <Modal title="Delete Playlist"
           visible={isDeletePlaylistModalVisible}
           onOk={deletePlaylist}
           onCancel={closeModal}
           okText="Yes"
-          >
-          <p style={{textAlign: 'center', color: 'red'}}>Are you sure you want to delete {playlist.playlistName}?</p>
+        >
+          <p style={{ textAlign: 'center', color: 'red' }}>Are you sure you want to delete {playlist.playlistName}?</p>
         </Modal>
       </div>
       {
         playlist.movies.length > 0 ?
           <div>
             <Slider {...slickSettings}>
-              {playlist.movies.map((obj) => { return <Movie movie={obj} key={obj.id} playlist={playlist.playlistName} refreshCallback={refreshCallback}/> })}
+              {playlist.movies.map((obj) => { return <Movie movie={obj} key={obj.id} playlist={playlist.playlistName} refreshCallback={refreshCallback} /> })}
             </Slider>
           </div> :
           <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
