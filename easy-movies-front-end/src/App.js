@@ -5,6 +5,8 @@ import {
   BrowserRouter as Router,
   Route,
 } from "react-router-dom";
+
+import MovieDetails from './Components/MovieDetails/MovieDetails';
 import TopBar from "./Components/TopBar/TopBar.js";
 import Cookies from 'universal-cookie';
 import Homepage from "./Components/Homepage/Homepage";
@@ -23,12 +25,12 @@ function App() {
   const value = { username, setUsername };
 
   return (
+
     <AuthContext.Provider value={value}>
       <div className={style.background} />
       <Router>
         <Route path="/"><TopBar /></Route>
-        {/* <Route path="/search"><SearchMovies keyword={keyword} /></Route>
-      <Route exact path="/MovieDetails/:id" component={MovieDetails} /> */}
+        <Route path="/movies/:movieId" component={MovieDetails}></Route>
       </Router>
     </AuthContext.Provider>
   );
