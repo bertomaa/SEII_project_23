@@ -110,7 +110,7 @@ export function Movie(props) {
                             <Button onClick={()=>{if(isFromPlaylist){props.refreshCallback()}}}>Salva</Button>
                         </>
                         :
-                        <div style={{ fontSize: "30px" }}>Nessun film</div>
+                        <div style={{ fontSize: "20px" }}>Nessuna playlist</div>
                 )
             }
         </>
