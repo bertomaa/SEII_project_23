@@ -1,4 +1,12 @@
 @import '~antd/dist/antd.css';
+@import "~slick-carousel/slick/slick.css"; 
+@import "~slick-carousel/slick/slick-theme.css";
+
+.slick-slider {
+    display: flex;
+    align-items: center;
+}
+
 .App {
     text-align: center;
 }
@@ -36,4 +44,14 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
 }

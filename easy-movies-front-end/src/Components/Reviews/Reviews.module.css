@@ -1,0 +1,38 @@
+.deleteButton {
+    transition: all .3s ease-in-out;
+    color: white
+}
+
+.deleteButton:hover {
+    color: lightcoral;
+}
+
+.editButton {
+    color: white;
+    transition: all .3s ease-in-out;
+}
+
+.editButton:hover {
+    color: lightskyblue;
+}
+
+.review {
+    background: rgba(255, 255, 255, 0.18);
+    /* background: rgba(0, 0, 0, 0.18); */
+    padding: 0 10px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 18px;
+}
+
+.collapsedButton {
+    font-size: 20px;
+    color: white;
+}
+
+.collapsedButton:hover {
+    color: lightskyblue;
+}
+
+.ant-comment-content-author-time :global {
+    flex-grow: 1 !important;
+}

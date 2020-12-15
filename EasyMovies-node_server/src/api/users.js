@@ -9,16 +9,6 @@ const fs  = require('fs');
 const privateKey = fs.readFileSync('./private.key', 'utf8');
 
 registerUser = async (req, res) => {
-  if (process.env.NODE_ENV === "production") { //si cambia nello start di package.json
-    if (!req.files || !req.files.img) {
-      throw new BadRequestException();
-    }
-    req.files.img.mv(`../resources/profile_imgs/${req.body.username}.jpg`, function (err) {
-      if (err)
-        throw new InternalServerErrorException();
-    });
-  }
-
   const username = req.body.username;
   const password = req.body.password;
   const name = req.body.name;
@@ -37,6 +27,19 @@ registerUser = async (req, res) => {
   const created = await adapterCreateUser(user).catch(e => console.log("Error: user already exists"));
   if (!created)
     throw new InternalServerErrorException();
+  if (process.env.NODE_ENV === "production") { //si cambia nello start di package.json
+    if (!req.body.image) {
+      throw new BadRequestException();
+    }
+    var base64Data = req.body.image.replace(/^data:image\/jpeg;base64,/, "");
+    fs.writeFile(`public/profile-images/${req.body.username}.jpg`, base64Data, 'base64', function (err) {
+      console.log(err);
+    });
+    // req.files.img.mv(`../resources/profile_imgs/${req.body.username}.jpg`, function (err) {
+    //   if (err)
+    //     throw new InternalServerErrorException();
+    // });
+  }
   res.status(201).send()
 }
 
@@ -51,8 +54,9 @@ loginUser = async (req, res) => {
   const logged = await adapterCheckUserCredentials(username, hashedPw);
   if (logged) {
     const token = jwt.sign({username: username}, privateKey, {expiresIn: 86400, algorithm: "RS256"});
-    res.cookie("JWTtoken", token, { httpOnly: true });
-    res.status(200).json({"JWTtoken": token});
+    res.cookie("JWTtoken", token);
+    res.cookie("username", username);
+    res.status(200).json({"JWTtoken": token, "username": username});
   } else
     throw new UnauthorizedException();
 }
@@ -63,6 +67,7 @@ logoutUser = async (req, res) => {
     throw new BadRequestException();
   if (!(await dataChecker.checkUsername(username)))
     throw new NotFoundException();
+  res.clearCookie("username");
   res.clearCookie('JWTtoken');
   res.status(200).send();
 }
@@ -74,6 +79,7 @@ deleteUser = async (req, res) => {
   if (!(await dataChecker.checkUsername(username)))
     throw new NotFoundException();
   await adapterDeleteUser(username);
+  res.clearCookie("username");
   res.clearCookie('JWTtoken');
   res.status(200).send();
 }

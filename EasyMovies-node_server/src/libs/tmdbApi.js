@@ -1,6 +1,6 @@
 const { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } = require('./exceptionHandler');
 
-const Axios = require("Axios").default;
+const Axios = require("axios").default;
 
 handleError = e => {
     switch (e.response.status) {

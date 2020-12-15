@@ -10,18 +10,32 @@ const authorizations = require("./libs/authorizations");
 const apiVersionManager = require('express-api-version-manager');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var cors = require('cors')
 require('dotenv').config();
 
-const PORT = process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 5001;
 
 console.log("USING ENVIRONMENT: " + process.env.NODE_ENV);
 console.log("USING API KEY    : " + process.env.TMDB_API_KEY);
 
+let XOrigin = "";
+if(process.env.NODE_ENV == "production")
+  XOrigin = "https://se2-client.herokuapp.com"
+else
+  XOrigin = "http://localhost:3000"
+
 const app = express();
 
+// app.use(cors())
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", Xorigin);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+  if(req.method == "OPTIONS"){
+    res.status(200).send();
+  } else
   next();
 });
 
@@ -51,7 +65,7 @@ app.use('/api/:apiVersion', apiVersionManager({
 
 routerApiV1.use("/", authorizationRouter);
 routerApiV2.use("/", authorizationRouter);
-app.use('/profile-images', express.static('public/profile-images'));
+app.use(express.static('public'));
 
 
 routerApiV1.get('/', (req, res) => {
@@ -114,6 +128,22 @@ routerApiV1.delete('/users/:username/playlists', (req, res) => exceptionHandler.
 
 //Get user playlists
 routerApiV2.get('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.getPlaylistsV2, req, res));
+
+//Add movie to playlist
+routerApiV2.put('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.addMovieToPlaylist, req, res));
+
+//Edit playlist name
+routerApiV2.patch('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.editPlaylistName, req, res));
+
+//Remove movie from playlist
+routerApiV2.delete('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.removeMovieFromPlaylist, req, res));
+
+//Create playlist
+routerApiV2.put('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.createPlaylist, req, res));
+
+//Delete playlist
+routerApiV2.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
+
 
 //SECURITY
 authorizationRouter.use("/users/:username/playlists", authorizations.authorizationCallBack);

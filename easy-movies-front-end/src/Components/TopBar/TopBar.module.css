@@ -1,0 +1,40 @@
+.topBarWrapper {
+    width: 100%;
+    justify-content: flex-start;
+    height: 60px;
+    align-items: center;
+    background-color: black;
+    position: fixed;
+    z-index: 2;
+}
+
+.topBarWrapperMobile {
+    height: 50px;
+}
+
+.topBarElement {
+    list-style: none;
+    color: white;
+    font-size: 1.5em;
+    font-weight: 300;
+    text-decoration: none;
+    transition: all .1s ease-in-out;
+    flex-shrink: 0;
+    white-space: nowrap;
+    margin: 0 10px;
+}
+
+.topBarElement:hover {
+    /* border-bottom: 1px solid white; */
+    transform: scale(1.05);
+}
+
+.accountIcon {
+    width: 40px;
+    height: 40px;
+}
+
+.accountIconMobile {
+    width: 35px;
+    height: 35px;
+}
