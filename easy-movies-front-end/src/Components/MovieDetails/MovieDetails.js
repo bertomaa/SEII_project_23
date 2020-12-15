@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import style from "./MovieDetails.module.css";
 import Axios from 'axios';
 import { TopReviews, UserReviews } from '../Reviews/Reviews';
+import {Divider} from 'antd'
 
 export default function MovieDetails({ match }) {
 
@@ -57,7 +58,7 @@ export default function MovieDetails({ match }) {
         <>
             <div className={style.container}>
                 {!isLoadingTrailer &&
-                    <div style={{ padding: "0 10vw", marginTop: "20px" }}>
+                    <div style={{ padding: "0 30px", marginTop: "20px" }}>
                         <div className={style.videoContainer}>
                             <iframe
                                 title={trailer}
@@ -86,6 +87,7 @@ export default function MovieDetails({ match }) {
                         </div>
                     </div>
                 }
+                <Divider style={{backgroundColor: 'white'}}/>
             <TopReviews movieId={match.params.movieId}/>
             </div>
         </>

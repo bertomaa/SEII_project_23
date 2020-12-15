@@ -59,13 +59,15 @@
 .data>p {
     padding-right: 20px;
     font-size: 1.2em;
-    color: rgba(200, 200, 200, 1);
+    /* color: rgba(200, 200, 200, 1); */
     padding: 5px 0;
+    color: white;
 }
 
 .overview {
     font-size: 1.4em;
     color: rgba(200, 200, 200, 1);
+    color: white;
 }
 
 .genres {
