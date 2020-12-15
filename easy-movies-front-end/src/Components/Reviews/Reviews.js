@@ -61,7 +61,7 @@ export function UserReviews(props) {
 
     const [loading, setLoading] = useState(true);
     const [children] = useState([])
-    const { username, setUsername } = useContext(AuthContext);
+    const { username } = useContext(AuthContext);
 
     useEffect(() => {
         if (loading) {
@@ -72,16 +72,10 @@ export function UserReviews(props) {
                     setLoading(false)
                     return;
                 }
+                console.log(res.data)
                 res.data.forEach((r) => {
-                    children.push(<Review review={r} key={r.username} username={r.username} movieId={r.movieId} />);
+                    children.push(<Review showTitle owner={username === r.username} review={r} key={r.movieId} username={r.username} movieId={r.movieId} />);
                 });
-                const rIndex = children.findIndex((e) => e.username === props.user);
-                if (rIndex)
-                    children.splice(rIndex, 1)
-                else
-                    children.pop();
-                const reviewToAdd = res.data.find((e) => e.username === props.user);
-                reviewToAdd && children.splice(0, 0, <Review review={reviewToAdd} username={props.user} movieId={props.movieId} key={props.user} refresh={() => { setLoading(true) }} />)
                 setLoading(false);
             }).catch(e => {
                 switch (e.response.status) {
@@ -94,7 +88,7 @@ export function UserReviews(props) {
                 setLoading(false)
             });
         }
-    }, [props.movieId, loading, children, props.user]);
+    }, [props.movieId, loading, children, props.user, username]);
 
     return (
         <>
@@ -114,6 +108,7 @@ const Review = (props) => {
     const movieId = props.movieId;
     const [editing, setEditing] = useState(!props.review);
     const create = !props.review;
+    const showTitle = !!props.showTitle;
     const [review, setReview] = useState(props.review ? props.review : {
         rate: undefined,
         content: "",
@@ -124,7 +119,7 @@ const Review = (props) => {
             <Comment
                 className={styles.review}
                 style={{ color: "white", borderRadius: "16px" }}
-                author={<Link to={"/users/" + reviewOwner} style={{ fontSize: "18px", color: "white" }}>{editing ? (username && reviewOwner) : reviewOwner}</Link>}
+                author={<Link to={showTitle ? "/movies/" + props.review.movieId : "/users/" + reviewOwner} style={{ fontSize: "18px", color: "white" }}>{showTitle ? props.review.movieDetails.title : (editing ? (username && reviewOwner) : reviewOwner)}</Link>}
                 avatar={
                     <Avatar
                         style={{ width: "50px", height: "50px" }}
@@ -170,7 +165,7 @@ const Review = (props) => {
                     </FlexView>
                 }
                 datetime={
-                    <FlexView style={{ justifyContent: "flex-end", alignItems: "center" }}>
+                    <FlexView style={{ justifyContent: "flex-end", alignItems: "center", width: "100%", flexGrow: 1 }}>
                         <Rate disabled={!editing || disabled} allowHalf onChange={(e) => { setReview({ ...review, rate: e }) }} value={review.rate} />
                         {!editing && owner && <EditOutlined onClick={() => { setEditing(true) }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.editButton} />}
                         {!editing && owner && <DeleteOutlined onClick={() => { onDeleteReview(reviewOwner, movieId, props.refresh); }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.deleteButton} />}
