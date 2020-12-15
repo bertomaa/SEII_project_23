@@ -12,7 +12,7 @@ function SearchBar(props) {
         <input
             className={classNames(style.searchBar, {[style.searchBarMobile]: props.mobile})}
             type="text"
-            placeholder="Type a movie..."
+            placeholder="Scrivi un film..."
             onChange={(e) => { props.onChange(e.target.value) }}
             onClick={() => { history.push("/search") }}
         >

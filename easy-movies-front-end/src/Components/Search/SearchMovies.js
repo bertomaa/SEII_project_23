@@ -31,7 +31,7 @@ function SearchMovies(props) {
     return (
         <>
             {hasKeyword ? (
-                isLoading ? <h1>Loading...</h1> : <DisplayMovies movies={movies} />)
+                isLoading ? <h1>Caricamento...</h1> : <DisplayMovies movies={movies} />)
                 :
                 <p>.</p>
             }
