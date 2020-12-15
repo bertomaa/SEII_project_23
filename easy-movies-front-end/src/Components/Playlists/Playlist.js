@@ -3,7 +3,7 @@ import Axios from 'axios';
 import Slider from "react-slick";
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import styles from "./Playlists.module.css";
-import { Button, Card, Input } from 'antd';
+import { Button, Card, Input, message} from 'antd';
 import { Movie } from '../DisplayMovies/DisplayMovies.js';
 import Modal from 'antd/lib/modal/Modal';
 import { AuthContext } from '../../App';
@@ -59,7 +59,10 @@ const Playlist = ({ playlist, refreshCallback, playlists }) => {
 
   const deletePlaylist = async () => {
     await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`, {data:{ playlist: playlist.playlistName }})
-    .then(res => {})
+    .then(res => {message.success("Playlist cancellata correttamente");
+    })
+    .catch(()=>{message.error("Errore cancellazione playlist");
+    })
     .finally(() => {
       closeModal();
       refreshCallback();
@@ -68,7 +71,11 @@ const Playlist = ({ playlist, refreshCallback, playlists }) => {
 
   const editName = async () => {
     if (newName && newName !== "") {
-      await Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${playlist.playlistName}`, { newName: newName }).then(res => {})
+      await Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${playlist.playlistName}`, { newName: newName })
+      .then(res => {message.success("Nome playlist modificato correttamente");
+      })
+      .catch(()=>{message.error("Errore modifica nome playlist");
+      })
       .finally(()=>{
         closeModal();
         refreshCallback();

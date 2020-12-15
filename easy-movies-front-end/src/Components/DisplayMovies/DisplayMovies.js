@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { MdPlaylistAdd, MdFavoriteBorder, MdFavorite } from 'react-icons/md';
 import { AiFillClockCircle, AiOutlineClockCircle } from 'react-icons/ai';
 import { CgPlayListRemove } from 'react-icons/cg';
-import { Button, Popover, Checkbox, Divider } from 'antd';
+import { Button, Popover, Checkbox, Divider, message } from 'antd';
 import { AuthContext } from '../../App';
 import { Spinner } from '../Commons/Commons';
 
@@ -146,7 +146,7 @@ export function Movie(props) {
                     <Popover content={accountPopover}>
                         <MdPlaylistAdd className={style.action} />
                     </Popover>
-                    {isFromPlaylist ? <CgPlayListRemove className={style.action} onClick={async () => {deleteMovieFromPlaylist().then(()=>props.refreshCallback())}} /> : null}
+                    {isFromPlaylist ? <CgPlayListRemove className={style.action} onClick={async () => {deleteMovieFromPlaylist().then(()=>{message.success("Film rimosso correttamente");props.refreshCallback()})}} /> : null}
                 </div> : null
             }
 

@@ -90,7 +90,7 @@ export default function TopBar(props) {
 
 	const logout = () => {
 		console.log("a");
-		Axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/logout`).then(res=>{
+		Axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/logout`).then(res => {
 			cookies.remove("JWTtoken");
 			cookies.remove("username");
 			setUsername(undefined);
@@ -127,7 +127,10 @@ export default function TopBar(props) {
 
 	const accountPopover = (
 		<FlexView column style={{ alignItems: "center" }}>
-			<Avatar src={`${process.env.REACT_APP_API_BASE_URL}/profile-images/${username}.jpg`} icon={<AiOutlineUserAdd />} style={{ marginBottom: "10px", flexShrink: 0, fontSize: "30px", padding: "10px", width: "50px", height: "50px" }} />
+			<Link to={"/users/" + username} style={{ zIndex: "2", cursor: "pointer" }}>
+				<Avatar src={`${process.env.REACT_APP_API_BASE_URL}/profile-images/${username}.jpg`} icon={<AiOutlineUserAdd />} style={{ marginBottom: "10px", flexShrink: 0, fontSize: "30px", padding: "10px", width: "50px", height: "50px" }} >
+				</Avatar>
+			</Link>
 			<div>{nameLogged + " " + surnameLogged}</div>
 			<Button type="link" style={{ width: "100%" }} ><Link to={"/playlists"}>Playlists</Link></Button>
 			<Button type="primary" style={{ width: "100%" }} onClick={logout}>Disconnetti</Button>

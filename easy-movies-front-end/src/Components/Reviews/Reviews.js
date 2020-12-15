@@ -68,7 +68,7 @@ export function UserReviews(props) {
             children.length = 0;
             Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${props.user}/reviews`).then(res => {
                 if(res.data.length === 0){
-                    children.push(<p>L'utente non ha ancora scritto alcuna recensione</p>)
+                    children.push(<div style={{color: "white"}}>L'utente non ha ancora scritto alcuna recensione</div>)
                     setLoading(false)
                     return;
                 }
@@ -80,10 +80,10 @@ export function UserReviews(props) {
             }).catch(e => {
                 switch (e.response.status) {
                     case 404:
-                        children.push(<p>L'utente cercato non esiste</p>)
+                        children.push(<div style={{color: "white"}}>L'utente cercato non esiste</div>)
                         break;
                     default:
-                        children.push(<p>Errore imprevisto</p>)
+                        children.push(<div style={{color: "white"}}>Errore imprevisto</div>)
                 }
                 setLoading(false)
             });
@@ -115,7 +115,7 @@ const Review = (props) => {
         title: ""
     })
     return (
-        <>
+        <div style={{width: "100%"}}>
             <Comment
                 className={styles.review}
                 style={{ color: "white", borderRadius: "16px" }}
@@ -172,7 +172,7 @@ const Review = (props) => {
                     </FlexView>
                 }
             />
-        </>
+        </div>
     );
 }
 

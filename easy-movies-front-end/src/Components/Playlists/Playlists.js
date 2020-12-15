@@ -3,7 +3,7 @@ import Axios from 'axios';
 import Playlist from "./Playlist.js";
 import { PlusOutlined } from '@ant-design/icons';
 import styles from "./Playlists.module.css";
-import { Button, Divider, Input } from 'antd';
+import { Button, Divider, Input, message } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import { AuthContext } from '../../App';
 import { Spinner } from '../Commons/Commons';
@@ -34,7 +34,11 @@ function Playlists() {
   const newPlaylist = async () => {
     if (newPlaylistName && newPlaylistName !== "") {
       await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`,{ "playlist": newPlaylistName })
-      .then(() => {})
+      .then(() => {
+        message.success("Playlist creata correttamente");
+      })
+      .catch(()=>{message.error("Errore creaziona playlist");
+      })
       .finally(()=>{
         closeModal();
         refreshCallback();
