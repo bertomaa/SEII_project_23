@@ -88,7 +88,7 @@ export function UserReviews(props) {
                 setLoading(false)
             });
         }
-    }, [props.movieId, loading, children, props.user]);
+    }, [props.movieId, loading, children, props.user, username]);
 
     return (
         <>
@@ -165,7 +165,7 @@ const Review = (props) => {
                     </FlexView>
                 }
                 datetime={
-                    <FlexView style={{ justifyContent: "flex-end", alignItems: "center", width: "100%" }}>
+                    <FlexView style={{ justifyContent: "flex-end", alignItems: "center", width: "100%", flexGrow: 1 }}>
                         <Rate disabled={!editing || disabled} allowHalf onChange={(e) => { setReview({ ...review, rate: e }) }} value={review.rate} />
                         {!editing && owner && <EditOutlined onClick={() => { setEditing(true) }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.editButton} />}
                         {!editing && owner && <DeleteOutlined onClick={() => { onDeleteReview(reviewOwner, movieId, props.refresh); }} style={{ fontSize: "20px", marginLeft: "15px" }} className={styles.deleteButton} />}
