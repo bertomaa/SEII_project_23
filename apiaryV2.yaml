@@ -426,7 +426,7 @@ paths:
       - name: catalogName
         in: path
         required: true
-        description: The naem of the catalog
+        description: The name of the catalog
         schema:
           type : string
     get:
@@ -445,6 +445,30 @@ paths:
           description: Internal Server Error
       summary: Get Catalog Movies List
       operationId: Get Catalog Movies List
+  /search/{keyword}:
+    parameters:
+      - name: keyword
+        in: path
+        required: true
+        description: The search terms
+        schema:
+          type : string
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Search for a movie based on keyword
+      operationId: Search for a movie based on keyword
 servers:
   - url: https://localhost:5000/api/v2/
 components:
