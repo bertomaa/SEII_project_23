@@ -14,6 +14,7 @@ import Particles from 'react-particles-js';
 import axios from 'axios';
 import { UserProfile } from './Components/UserProfile/UserProfile';
 import Playlists from './Components/Playlists/Playlists.js';
+import SearchMovies from './Components/Search/SearchMovies';
 require('dotenv').config()
 
 axios.defaults.withCredentials = true;
@@ -27,6 +28,7 @@ function App() {
   const cookies = new Cookies();
 
   const [username, setUsername] = useState(cookies.get("username"));
+  const [keyword, setKeyword] = useState("");
   const value = { username, setUsername };
 
   return (
@@ -34,12 +36,13 @@ function App() {
     <AuthContext.Provider value={value}>
       <div className={style.background} />
       <Router>
-        <Route path="/"><TopBar /></Route>
+        <Route path="/"><TopBar onChange={setKeyword}/></Route>
         <Route path="/"><ParticelsBackground /></Route>
         <Route path="/movies/:movieId" component={MovieDetails}></Route>
         <Route path="/users/:username" component={UserProfile}></Route>
         <Route exact path="/"><Homepage /></Route>
         <Route exact path="/playlists"><Playlists /></Route>
+        <Route path="/search"><SearchMovies keyword={keyword}/></Route>
       </Router>
     </AuthContext.Provider>
   );

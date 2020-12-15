@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
-import DisplayMovies from '../DisplayMovies';
+import DisplayMovies from '../DisplayMovies/DisplayMovies';
 
 var _ = require('lodash');
 
 let a = _.debounce((setMovies, setIsLoading, keyword)=> {
-    Axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${keyword}&page=1&include_adult=false&language=it-IT`).then((res) => {
-        setMovies(res.data.results);
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/search/${keyword}`).then((res) => {
+        setMovies(res.data);
         setIsLoading(false);
     });
 }, 300);

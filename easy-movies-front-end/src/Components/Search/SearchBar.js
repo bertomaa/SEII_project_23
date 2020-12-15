@@ -1,5 +1,6 @@
-import React from 'react'
-import style from "../modules.css/SearchBar.module.css"
+import React from 'react';
+import style from "./SearchBar.module.css";
+import classNames from 'classnames';
 import {
     useHistory
 } from "react-router-dom";
@@ -7,10 +8,9 @@ import {
 function SearchBar(props) {
     let history = useHistory();
 
-
     return (
         <input
-            className={style.searchBar}
+            className={classNames(style.searchBar, {[style.searchBarMobile]: props.mobile})}
             type="text"
             placeholder="Type a movie..."
             onChange={(e) => { props.onChange(e.target.value) }}

@@ -120,7 +120,7 @@ export function Movie(props) {
     return (
 
         <div className={style.movieContainer} onMouseEnter={() => setOver(true)} onMouseLeave={() => setOver(false)}>
-            <Link to={"/MovieDetails/" + m.id} style={{ textDecoration: 'none' }} key={m.id}>
+            <Link to={"/movies/" + m.id} style={{ textDecoration: 'none' }} key={m.id}>
                 {
                     m.poster_path ?
                         <ReactImageAppear
