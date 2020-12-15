@@ -242,6 +242,10 @@ adapterGetHomepageMoviesV2 = async () => {
     return await tmdbApi.getTmdbHomepageMovies();
 }
 
+adapterGetSearchResultsV2 = async (keyword) => {
+    return await tmdbApi.getTmdbSearchResults(keyword);
+}
+
 
 //#####################################################
 // REVIEWS

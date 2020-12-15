@@ -53,11 +53,18 @@ getHomepageMoviesV2 = async (req, res) => {
     res.status(200).send(ret);
 }
 
+getSearchResultsV2 = async (req, res) => {
+    const keyword = req.params.keyword;
+    let ret = await adapterGetSearchResultsV2(keyword);
+    res.status(200).send(ret);
+}
+
 module.exports = {
     getCatalogRoutingV1,
     getCatalogRoutingV2,
     getMovieDataV1,
     getMovieDataV2,
     getHomepageMoviesV1,
-    getHomepageMoviesV2
+    getHomepageMoviesV2,
+    getSearchResultsV2
 }
