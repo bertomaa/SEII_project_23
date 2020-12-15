@@ -147,8 +147,14 @@ getUserReviews = async (req, res) => {
         throw new BadRequestException();
     if(! await dataChecker.existsDBField("Users", "username", username))
         throw new NotFoundException();
-    let ret = await adapterGetUserReviews(username);
-    res.status(200).send(ret)
+    let reviews = await adapterGetUserReviews(username);
+
+    if (!reviews)
+        throw new NotFoundException();
+    for await (let r of reviews) {
+        r.movieDetails = await adapterGetMovieDetailsV2(r.movieId);
+    };
+    res.status(200).send(reviews)
 }
 
 

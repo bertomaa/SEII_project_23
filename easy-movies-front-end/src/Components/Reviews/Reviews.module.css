@@ -1,5 +1,6 @@
 .deleteButton {
-    transition: all .4s ease-in-out;
+    transition: all .3s ease-in-out;
+    color: white
 }
 
 .deleteButton:hover {
@@ -7,7 +8,8 @@
 }
 
 .editButton {
-    transition: all .4s ease-in-out;
+    color: white;
+    transition: all .3s ease-in-out;
 }
 
 .editButton:hover {
@@ -15,7 +17,8 @@
 }
 
 .review {
-    background: rgba(0, 0, 0, 0.18);
+    background: rgba(255, 255, 255, 0.18);
+    /* background: rgba(0, 0, 0, 0.18); */
     padding: 0 10px;
     backdrop-filter: blur(10px);
     margin-bottom: 18px;
@@ -28,4 +31,8 @@
 
 .collapsedButton:hover {
     color: lightskyblue;
+}
+
+.ant-comment-content-author-time :global {
+    flex-grow: 1 !important;
 }
