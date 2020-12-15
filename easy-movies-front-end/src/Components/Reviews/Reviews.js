@@ -119,7 +119,7 @@ const Review = (props) => {
             <Comment
                 className={styles.review}
                 style={{ color: "white", borderRadius: "16px" }}
-                author={<Link to={"/users/" + reviewOwner} style={{ fontSize: "18px", color: "white" }}>{showTitle ? props.review.movieDetails.title : (editing ? (username && reviewOwner) : reviewOwner)}</Link>}
+                author={<Link to={showTitle ? "/movies/" + props.review.movieId : "/users/" + reviewOwner} style={{ fontSize: "18px", color: "white" }}>{showTitle ? props.review.movieDetails.title : (editing ? (username && reviewOwner) : reviewOwner)}</Link>}
                 avatar={
                     <Avatar
                         style={{ width: "50px", height: "50px" }}
