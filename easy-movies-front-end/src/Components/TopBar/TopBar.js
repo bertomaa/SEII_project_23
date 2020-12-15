@@ -142,15 +142,15 @@ export default function TopBar(props) {
 				<SearchBar onChange={props.onChange} mobile={mobile} />
 				{!username ?
 					<FlexView shrink={0}>
-						<Popover content={registerPopover} title={"Crea un nuovo Account"}>
+						<Popover getPopupContainer={trigger => trigger.parentElement} content={registerPopover} title={"Crea un nuovo Account"}>
 							<div className={styles.topBarElement}>Registrati</div>
 						</Popover>
-						<Popover content={loginPopover} title={"Accedi"}>
+						<Popover getPopupContainer={trigger => trigger.parentElement} content={loginPopover} title={"Accedi"}>
 							<div className={styles.topBarElement}>Accedi</div>
 						</Popover>
 					</FlexView>
 					:
-					<Popover content={accountPopover} title={username}>
+					<Popover getPopupContainer={trigger => trigger.parentElement} content={accountPopover} title={username}>
 						<Avatar className={classNames(styles.topBarElement, styles.accountIcon, { [styles.accountIconMobile]: mobile })} src={`${process.env.REACT_APP_API_BASE_URL}/profile-images/${username}.jpg`}></Avatar>
 					</Popover>
 				}
