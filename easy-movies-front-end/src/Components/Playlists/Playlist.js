@@ -3,16 +3,18 @@ import Axios from 'axios';
 import Slider from "react-slick";
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import styles from "./Playlists.module.css";
-import { Button, Input } from 'antd';
+import { Button, Card, Input } from 'antd';
 import { Movie } from '../DisplayMovies/DisplayMovies.js';
 import Modal from 'antd/lib/modal/Modal';
 import { AuthContext } from '../../App';
+import { AiOutlineDelete } from 'react-icons/ai';
+import classNames from 'classnames';
 
-const Playlist = ({ playlist, refreshCallback }) => {
+const Playlist = ({ playlist, refreshCallback, playlists }) => {
   const [newName, setNewName] = useState("");
   const [isEditNameModalVisible, setIsEditNameModalVisible] = useState(false);
   const [isDeletePlaylistModalVisible, setIsDeletePlaylistModalVisible] = useState(false);
-  const { username, setUsername } = useContext(AuthContext);
+  const { username } = useContext(AuthContext);
 
   const slickSettings = {
     dots: false,
@@ -25,14 +27,28 @@ const Playlist = ({ playlist, refreshCallback }) => {
     prevArrow: <SamplePrevArrow />,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1800,
+        settings: {
+          slidesToShow: Math.min(4, playlist.movies.length),
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 1500,
+        settings: {
+          slidesToShow: Math.min(3, playlist.movies.length),
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 1200,
         settings: {
           slidesToShow: Math.min(2, playlist.movies.length),
           slidesToScroll: 2
         }
       },
       {
-        breakpoint: 600,
+        breakpoint: 900,
         settings: {
           slidesToShow: Math.min(1, playlist.movies.length),
           slidesToScroll: 1
@@ -42,26 +58,21 @@ const Playlist = ({ playlist, refreshCallback }) => {
   };
 
   const deletePlaylist = async () => {
-
-    await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`, { "playlist": playlist.playlistName }).then(res => {
+    await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`, {data:{ playlist: playlist.playlistName }})
+    .then(res => {})
+    .finally(() => {
       closeModal();
       refreshCallback();
     });
-
-    closeModal();
-    refreshCallback();
   }
 
   const editName = async () => {
     if (newName && newName !== "") {
-
-      await Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${playlist.playlistName}`, { "newName": newName }).then(res => {
+      await Axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${playlist.playlistName}`, { newName: newName }).then(res => {})
+      .finally(()=>{
         closeModal();
         refreshCallback();
       });
-
-      closeModal();
-      refreshCallback();
     }
   }
 
@@ -71,42 +82,41 @@ const Playlist = ({ playlist, refreshCallback }) => {
   };
 
   return (
-    <div>
+    <Card style={{ margin: "2vw", borderRadius: "1vw", border:"none", background: "rgba(0,0,0,0.3)"}}>
       <div className={styles.spacedContainer} style={{ display: 'flex', flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-        <h1>{playlist.playlistName}</h1>
-        <Button shape="circle" icon={<EditOutlined />} onClick={() => setIsEditNameModalVisible(true)} />
-        <Modal title="Edit Playlist Name"
+        <div style={{ color: 'white', fontSize: "35px"}}>{playlist.playlistName}</div>
+        <EditOutlined className={styles.editButton}  onClick={() => setIsEditNameModalVisible(true)} />
+        <Modal title="Cambia nome playlist"
           visible={isEditNameModalVisible}
           onOk={editName}
           onCancel={closeModal}>
-          <h1>New name:</h1>
-          <br />
-          <Input placeholder="Playlist name" defaultValue={playlist.playlistName} onChange={(v) => setNewName(v.target.value)} />
+          <div style={{ fontSize: "35px" }}>Nuovo nome:</div>
+          <Input placeholder="Nome della playlist" defaultValue={playlist.playlistName} onChange={(v) => setNewName(v.target.value)} />
         </Modal>
-        <Button shape="circle" icon={<DeleteOutlined />} onClick={() => setIsDeletePlaylistModalVisible(true)} />
-        <Modal title="Delete Playlist"
+        <AiOutlineDelete className={styles.deleteButton} onClick={() => setIsDeletePlaylistModalVisible(true)} />
+        <Modal title="Cancella playlist"
           visible={isDeletePlaylistModalVisible}
           onOk={deletePlaylist}
           onCancel={closeModal}
-          okText="Yes"
+          okText="Si"
         >
-          <p style={{ textAlign: 'center', color: 'red' }}>Are you sure you want to delete {playlist.playlistName}?</p>
+          <div style={{ color: 'red', fontSize: "32px"}}>Vuoi cancellare {playlist.playlistName}?</div>
         </Modal>
       </div>
       {
         playlist.movies.length > 0 ?
           <div>
             <Slider {...slickSettings}>
-              {playlist.movies.map((obj) => { return <Movie movie={obj} key={obj.id} playlist={playlist.playlistName} refreshCallback={refreshCallback} /> })}
+              {playlist.movies.map((obj) => { return <Movie movie={obj} key={obj.id} playlist={playlist.playlistName} refreshCallback={refreshCallback} playlists={playlists}/> })}
             </Slider>
           </div> :
-          <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <h1>
-              No movies found
-          </h1>
+          <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-start', alignItems: 'center', height: "50px"}}>
+            <div style={{ color: 'white', fontSize: "20px"}}>
+              Nessun film trovato
+            </div>
           </div>
       }
-    </div>
+    </Card>
 
   );
 }

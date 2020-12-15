@@ -38,7 +38,7 @@ function App() {
         <Route path="/"><ParticelsBackground /></Route>
         <Route path="/movies/:movieId" component={MovieDetails}></Route>
         <Route exact path="/"><Homepage /></Route>
-        <Route exact path="/"><Playlists /></Route>
+        <Route exact path="/playlists"><Playlists /></Route>
       </Router>
     </AuthContext.Provider>
   );

@@ -7,45 +7,114 @@ import classNames from 'classnames';
 import { MdPlaylistAdd, MdFavoriteBorder, MdFavorite } from 'react-icons/md';
 import { AiFillClockCircle, AiOutlineClockCircle } from 'react-icons/ai';
 import { CgPlayListRemove } from 'react-icons/cg';
-import Modal from 'antd/lib/modal/Modal';
-import { Button } from 'antd';
+import { Button, Popover, Checkbox, Divider } from 'antd';
 import { AuthContext } from '../../App';
+import { Spinner } from '../Commons/Commons';
 
 export function Movie(props) {
-    const [showPlaylistSelectModal, setShowPlaylistSelectModal] = useState(false);
-    const [playlists, setPlaylists] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const watchLaterText = "Guarda più tardi";
+    const likedText = "Piaciuti";
 
-    const { username, setUsername } = useContext(AuthContext);
+    const [showPlaylistSelectModal, setShowPlaylistSelectModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [liked, setLiked] = useState(false);
+    const [watchLater, setWatchLater] = useState(false);
+
+    const { username } = useContext(AuthContext);
 
     const m = props.movie;
 
     const isFromPlaylist = props.playlist && props.refreshCallback;
 
-    useEffect(async () => {
-        loadPlaylists();
+    useEffect(() => {
+        for (let pl1 in props.playlists) {
+            let pl = props.playlists[pl1];
+            if (pl.playlistName == watchLaterText) {
+                for (let mv1 in pl.movies) {
+                    let mv = pl.movies[mv1];
+                    if (mv.id == m.id) {
+                        setWatchLater(true);
+                    }
+                }
+            }
+            if (pl.playlistName == likedText) {
+                for (let mv1 in pl.movies) {
+                    let mv = pl.movies[mv1];
+                    if (mv.id == m.id) {
+                        setLiked(true);
+                    }
+                }
+            }
+        }
+        setIsLoading(false);
     }, []);
 
-    const deleteMovieFromPlaylist = async () => {
-        await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${props.playlist}`, { "movieId": m.id }).then(res => {
-            props.refreshCallback();
+    const deleteMovieFromPlaylist = async (playlistName) => {
+        let pname;
+        if (playlistName === undefined) {
+            pname = props.playlist;
+        } else {
+            pname = playlistName;
+        }
+        await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${pname}`, { data: { movieId: m.id.toString() } }).then(res => {
+            
         });
     }
 
     const addMovieToPlaylist = async (playlistName) => {
-        await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists/${playlistName}`, { "movieId": m.id }).then(res => { });
+        await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists/${playlistName}`, { movieId: m.id.toString() }).then(res => {
+            
+        });
     }
 
-    const loadPlaylists = async () => {
-        await Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/${username}/playlists`).then((res) => {
-            setPlaylists(res.data);
-        });
-        setIsLoading(false);
-    }
+    const createPlaylist = async (pname) => {
+        await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`, { "playlist": pname })
+            .then(() => { })
+            .finally(() => {
+                closeModal();
+            });
+    };
 
     const closeModal = () => {
         setShowPlaylistSelectModal(false);
     }
+
+    const playlistContainsMovie = (playl) => {
+        for (let pl1 in props.playlists) {
+            let pl = props.playlists[pl1];
+            if (pl.playlistName == playl) {
+                for (let mv1 in pl.movies) {
+                    let mv = pl.movies[mv1];
+                    if (mv.id == m.id) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+
+    const accountPopover = (
+        <>
+            <div style={{ fontSize: "20px" }}>Aggiungi film a:</div>
+            <Divider/>
+            {
+                isLoading ? null : (
+                    props.playlists.length > 0 ?
+                        <>
+                        {props.playlists.map((obj) => { return <><Checkbox 
+                            style={{ marginBottom: "10px" }}
+                            onChange={(e)=>{if(e.target.checked){addMovieToPlaylist(obj.playlistName)}else{deleteMovieFromPlaylist(obj.playlistName)}}}
+                            defaultChecked={playlistContainsMovie(obj.playlistName)}>{obj.playlistName}
+                            </Checkbox><br/></> })}
+                            <Button onClick={()=>{if(isFromPlaylist){props.refreshCallback()}}}>Salva</Button>
+                        </>
+                        :
+                        <div style={{ fontSize: "30px" }}>Nessun film</div>
+                )
+            }
+        </>
+    );
 
     const [over, setOver] = useState(false);
     return (
@@ -61,42 +130,57 @@ export function Movie(props) {
                             className={style.poster}
                             showLoader={false}
                         /> :
-                        <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center', height: "450px" }}>
-                            No cover image
+                        <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center', height: "450px", color: "blue" }}>
+                            No immagine di copertina
                     </div>
                 }
                 <div className={classNames(style.gradient, { [style.gradientActive]: over })}></div>
-                <p className={classNames(style.title, { [style.titleActive]: over })}>{m.title}</p>
+                <div style={{ marginBottom: "40px" }} className={classNames(style.title, { [style.titleActive]: over })}>{m.title}</div>
             </Link>
-            <div className={classNames(style.movieActions, { [style.movieActionsActive]: over })}>
-                {m.watchLater ? <AiFillClockCircle className={style.action} /> : <AiOutlineClockCircle className={style.action} onClick={() => { console.log("click") }} />}
-                {m.liked ? <MdFavorite className={style.action} /> : <MdFavoriteBorder className={style.action} />}
-                <MdPlaylistAdd className={style.action} onClick={() => setShowPlaylistSelectModal(true)} />
-                {isFromPlaylist ? <CgPlayListRemove className={style.action} onClick={deleteMovieFromPlaylist} /> : null}
-            </div>
-            <Modal title="Add movie to playlist"
-                visible={showPlaylistSelectModal}
-                onOk={closeModal}
-                onCancel={closeModal}
-            >
-                <h1>Add movie to:</h1>
-                {
-                    isLoading ? null : (
-                        playlists.length > 0 ?
-                            playlists.map((obj) => { return <><Button style={{ marginBottom: "10px" }} onclick={() => addMovieToPlaylist(obj.playlistName)}>{obj.playlistName}</Button> <br /> </> })
-                            :
-                            <h2>No playlists found</h2>
-                    )
-                }
-            </Modal>
+            {
+                username ? <div className={classNames(style.movieActions, { [style.movieActionsActive]: over })}>
+                    {watchLater ? <AiFillClockCircle className={style.action} onClick={() => { deleteMovieFromPlaylist(watchLaterText); setWatchLater(false) }} /> :
+                        <AiOutlineClockCircle className={style.action} onClick={() => { createPlaylist(watchLaterText).catch(() => { }).finally(() => { addMovieToPlaylist(watchLaterText); setWatchLater(true) }) }} />}
+                    {liked ? <MdFavorite className={style.action} onClick={() => { deleteMovieFromPlaylist(likedText); setLiked(false) }} /> :
+                        <MdFavoriteBorder className={style.action} onClick={() => { createPlaylist(likedText).catch(() => { }).finally(() => { addMovieToPlaylist(likedText); setLiked(true) }) }} />}
+                    <Popover content={accountPopover}>
+                        <MdPlaylistAdd className={style.action} />
+                    </Popover>
+                    {isFromPlaylist ? <CgPlayListRemove className={style.action} onClick={async () => {deleteMovieFromPlaylist().then(()=>props.refreshCallback())}} /> : null}
+                </div> : null
+            }
+
+
         </div>
     )
 }
 
 export default function DisplayMovies(props) {
+    const { username } = useContext(AuthContext);
+    const [playlists, setPlaylists] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const loadPlaylists = async () => {
+        await Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/playlists`).then((res) => {
+            setPlaylists(res.data);
+        })
+            .catch(() => { });
+    }
+
+    useEffect(async () => {
+        if (username) {
+            await loadPlaylists().then(() => { }).finally(() => {
+                setIsLoading(false);
+            });
+        } else {
+            setIsLoading(false);
+        }
+    }, []);
+
     return (
-        <div className={style.movies}>
-            {props.movies.map(m => <Movie movie={m} key={m.id} />)}
-        </div>
+        isLoading ? <div style={{paddingTop: "80px", height: "90vh"}}><Spinner size={400} /></div> :
+            <div className={style.movies}>
+                {props.movies.map(m => <Movie playlists={playlists} movie={m} key={m.id} />)}
+            </div>
     )
 }
