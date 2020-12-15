@@ -37,8 +37,15 @@ getTmdbHomepageMovies = async () => {
     }).catch(handleError);
 }
 
+getTmdbSearchResults = async (keyword) => {
+    return await Axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&query=${keyword}&page=1&include_adult=false&language=it-IT`).then((res) => {
+        return res.data.results;
+    }).catch(handleError);
+}
+
 module.exports = {
     getTmdbMovieData,
     getTmdbHomepageMovies,
-    tmdbMovieExists
+    tmdbMovieExists,
+    getTmdbSearchResults
 }

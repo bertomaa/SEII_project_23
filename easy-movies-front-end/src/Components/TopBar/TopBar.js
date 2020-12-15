@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styles from "./TopBar.module.css"
-import SearchBar from '../SearchBar/SearchBar';
+import SearchBar from '../Search/SearchBar';
 import { HomeFilled, LoadingOutlined, } from '@ant-design/icons';
 import FlexView from 'react-flexview/lib';
 import Avatar from 'antd/lib/avatar/avatar';
