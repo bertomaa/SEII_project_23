@@ -13,6 +13,7 @@ import Homepage from "./Components/Homepage/Homepage";
 import Particles from 'react-particles-js';
 import axios from 'axios';
 import { UserProfile } from './Components/UserProfile/UserProfile';
+import Playlists from './Components/Playlists/Playlists.js';
 require('dotenv').config()
 
 axios.defaults.withCredentials = true;
@@ -38,6 +39,7 @@ function App() {
         <Route path="/movies/:movieId" component={MovieDetails}></Route>
         <Route path="/users/:username" component={UserProfile}></Route>
         <Route exact path="/"><Homepage /></Route>
+        <Route exact path="/playlists"><Playlists /></Route>
       </Router>
     </AuthContext.Provider>
   );
