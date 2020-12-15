@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styles from "./TopBar.module.css"
 import SearchBar from '../SearchBar/SearchBar';
-import { HomeFilled, HomeOutlined, MenuOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { HomeFilled, LoadingOutlined, } from '@ant-design/icons';
 import FlexView from 'react-flexview/lib';
 import Avatar from 'antd/lib/avatar/avatar';
 import { Popover, message } from 'antd';
@@ -30,14 +30,14 @@ export default function TopBar(props) {
 	const [surname, setSurname] = useState(undefined)
 	const [imgBase64, setImgBase64] = useState(undefined)
 
-	
+
 
 	useEffect(() => {
 		setMobile(size.width < 600)
 	}, [size])
 
-	useEffect(()=>{
-		username && Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}`).then(res=>{
+	useEffect(() => {
+		username && Axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}`).then(res => {
 			setNameLogged(res.data.name)
 			setSurnameLogged(res.data.surname)
 		})
@@ -89,15 +89,18 @@ export default function TopBar(props) {
 	}
 
 	const logout = () => {
-		cookies.remove("JWTtoken");
-		cookies.remove("username");
-		setUsername(undefined);
+		console.log("a");
+		Axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/v2/users/${username}/logout`).then(res=>{
+			cookies.remove("JWTtoken");
+			cookies.remove("username");
+			setUsername(undefined);
+		})
 	}
 
 	const registerPopover = (
 		<FlexView column style={{ alignItems: "center" }}>
 			<FlexView style={{ alignItems: "center" }}>
-				<AvatarUpload setImg={(r)=>{setImgBase64(r)}} style={{ marginBottom: "10px", flexShrink: 0, fontSize: "30px", padding: "10px", width: "50px", height: "50px" }} />
+				<AvatarUpload setImg={(r) => { setImgBase64(r) }} style={{ marginBottom: "10px", flexShrink: 0, fontSize: "30px", padding: "10px", width: "50px", height: "50px" }} />
 			</FlexView>
 			{/* <Avatar icon={<AiOutlineUserAdd />} style={{ marginBottom: "10px", flexShrink: 0, fontSize: "30px", padding: "10px", width: "50px", height: "50px" }} /> */}
 			<Input placeholder="name" style={{ margin: "10 10px" }} onChange={e => setName(e.target.value)} />
@@ -118,7 +121,7 @@ export default function TopBar(props) {
 			<div style={{ height: "10px" }} />
 			<Input.Password value={passwordLogin} placeholder="password" type="password" style={{ margin: "10 10px" }} onChange={e => setPasswordLogin(e.target.value)} />
 			<Divider />
-			<Button type="primary" style={{ width: "100%" }} onClick={()=>login()} disabled={!(usernameFormLogin && passwordLogin)}>Accedi</Button>
+			<Button type="primary" style={{ width: "100%" }} onClick={() => login()} disabled={!(usernameFormLogin && passwordLogin)}>Accedi</Button>
 		</FlexView>
 	);
 
@@ -140,15 +143,15 @@ export default function TopBar(props) {
 				<SearchBar onChange={props.onChange} mobile={mobile} />
 				{!username ?
 					<FlexView shrink={0}>
-						<Popover content={registerPopover} title={"Crea un nuovo Account"}>
+						<Popover getPopupContainer={trigger => trigger.parentElement} content={registerPopover} title={"Crea un nuovo Account"}>
 							<div className={styles.topBarElement}>Registrati</div>
 						</Popover>
-						<Popover content={loginPopover} title={"Accedi"}>
+						<Popover getPopupContainer={trigger => trigger.parentElement} content={loginPopover} title={"Accedi"}>
 							<div className={styles.topBarElement}>Accedi</div>
 						</Popover>
 					</FlexView>
 					:
-					<Popover content={accountPopover} title={username}>
+					<Popover getPopupContainer={trigger => trigger.parentElement} content={accountPopover} title={username}>
 						<Avatar className={classNames(styles.topBarElement, styles.accountIcon, { [styles.accountIconMobile]: mobile })} src={`${process.env.REACT_APP_API_BASE_URL}/profile-images/${username}.jpg`}></Avatar>
 					</Popover>
 				}

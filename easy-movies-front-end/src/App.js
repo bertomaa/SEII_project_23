@@ -11,9 +11,8 @@ import TopBar from "./Components/TopBar/TopBar.js";
 import Cookies from 'universal-cookie';
 import Homepage from "./Components/Homepage/Homepage";
 import Particles from 'react-particles-js';
-import Playlists from "./Components/Playlists/Playlists";
 import axios from 'axios';
-var jwt = require('jsonwebtoken');
+import { UserProfile } from './Components/UserProfile/UserProfile';
 require('dotenv').config()
 
 axios.defaults.withCredentials = true;
@@ -37,6 +36,7 @@ function App() {
         <Route path="/"><TopBar /></Route>
         <Route path="/"><ParticelsBackground /></Route>
         <Route path="/movies/:movieId" component={MovieDetails}></Route>
+        <Route path="/users/:username" component={UserProfile}></Route>
         <Route exact path="/"><Homepage /></Route>
         <Route exact path="/playlists"><Playlists /></Route>
       </Router>
@@ -67,7 +67,7 @@ const ParticelsBackground = () => (<Particles
       },
       "move": {
         "random": true,
-        "speed": 1,
+        "speed": 2,
         "direction": "top",
         "out_mode": "out"
       }

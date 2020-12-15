@@ -4,6 +4,7 @@
     width: 100vw;
     height: 100vh;
     /* background-color: #334; */
+    /* background-image: linear-gradient(-225deg, #CBBACC 0%, #2580B3 100%); */
     background-image: linear-gradient( 109.6deg, rgba(48, 207, 208, 1) 11.2%, rgba(51, 8, 103, 1) 92.5%);
     font-family: 'Montserrat', sans-serif;
 }
