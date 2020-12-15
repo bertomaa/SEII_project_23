@@ -38,6 +38,7 @@ function App() {
         <Route path="/movies/:movieId" component={MovieDetails}></Route>
         <Route path="/users/:username" component={UserProfile}></Route>
         <Route exact path="/"><Homepage /></Route>
+        <Route exact path="/playlists"><Playlists /></Route>
       </Router>
     </AuthContext.Provider>
   );

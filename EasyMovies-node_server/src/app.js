@@ -123,6 +123,22 @@ routerApiV1.delete('/users/:username/playlists', (req, res) => exceptionHandler.
 //Get user playlists
 routerApiV2.get('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.getPlaylistsV2, req, res));
 
+//Add movie to playlist
+routerApiV2.put('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.addMovieToPlaylist, req, res));
+
+//Edit playlist name
+routerApiV2.patch('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.editPlaylistName, req, res));
+
+//Remove movie from playlist
+routerApiV2.delete('/users/:username/playlists/:playlist', (req, res) => exceptionHandler.exceptionWrapper(playlists.removeMovieFromPlaylist, req, res));
+
+//Create playlist
+routerApiV2.put('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.createPlaylist, req, res));
+
+//Delete playlist
+routerApiV2.delete('/users/:username/playlists', (req, res) => exceptionHandler.exceptionWrapper(playlists.deletePlaylist, req, res));
+
+
 //SECURITY
 authorizationRouter.use("/users/:username/playlists", authorizations.authorizationCallBack);
 

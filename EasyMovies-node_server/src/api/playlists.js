@@ -7,14 +7,18 @@ getPlaylists = async (req, res) => {
   let ret = [];
   const playlists = await adapterGetPlaylists(username);
 
-  if (!playlists)
+  if (!playlists) {
     throw new NotFoundException();
+  }
+
   let i = 0
   for await (let p of playlists) {
     ret[i] = { playlistName: p.name, movies: [] };
-    for await (let m of p.movies) {
-      let toAdd = await adapterGetMovieDetailsV1(m);
-      toAdd ? ret[i].movies.push(toAdd) : null;
+    if (p.movies) {
+      for await (let m of p.movies) {
+        let toAdd = await adapterGetMovieDetailsV1(m).catch(()=>{});;
+        toAdd ? ret[i].movies.push(toAdd) : null;
+      }
     }
     i++;
   };
@@ -26,14 +30,17 @@ getPlaylistsV2 = async (req, res) => {
   let ret = [];
   const playlists = await adapterGetPlaylists(username);
 
-  if (!playlists)
+  if (!playlists) {
     throw new NotFoundException();
+  }
   let i = 0
   for await (let p of playlists) {
     ret[i] = { playlistName: p.name, movies: [] };
-    for await (let m of p.movies) {
-      let toAdd = await adapterGetMovieDetailsV2(m);
-      toAdd ? ret[i].movies.push(toAdd) : null;
+    if (p.movies) {
+      for await (let m of p.movies) {
+        let toAdd = await adapterGetMovieDetailsV2(m).catch(()=>{});
+        toAdd ? ret[i].movies.push(toAdd) : null;
+      }
     }
     i++;
   };

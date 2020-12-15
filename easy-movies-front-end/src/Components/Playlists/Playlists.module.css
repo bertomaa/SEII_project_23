@@ -1,0 +1,53 @@
+.title {
+    display: block;
+    font-size: 90px;
+    margin-right: 2rem;
+    color: white;
+    margin-left: 2vw;
+}
+
+.mainbody {
+    padding: 60px 20px 20px 20px;
+}
+
+.spacedContainer>* {
+    margin-right: 1rem;
+}
+
+.action {
+    z-index: 2;
+    font-size: 22px;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+    color: white;
+}
+
+.action:hover {
+    color: lightskyblue;
+}
+
+.deleteButton {
+    margin-top: 5px;
+    z-index: 2;
+    font-size: 22px;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+    color: white
+}
+
+.deleteButton:hover {
+    color: lightcoral;
+}
+
+.editButton {
+    margin-top: 5px;
+    z-index: 2;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+.editButton:hover {
+    color: lightskyblue;
+}
