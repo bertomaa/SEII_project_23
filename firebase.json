@@ -1,0 +1,14 @@
+{
+    "hosting": {
+        "public": "easy-movies-front-end/build",
+        "rewrites": [{
+            "source": "**",
+            "destination": "/index.html"
+        }],
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ]
+    }
+}

@@ -27,6 +27,9 @@ else
 
 const app = express();
 
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
+
 // app.use(cors())
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", XOrigin);

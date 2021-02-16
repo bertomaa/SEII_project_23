@@ -5,8 +5,8 @@
     "main": "index.js",
     "scripts": {
         "test": "jest --detectOpenHandles --forceExit",
-        "start": "NODE_ENV=development nodemon src/server.js",
-        "prod": "NODE_ENV=production node src/server.js",
+        "start": "NODE_ENV=development MONGODB_URL=mongodb+srv://ingSoft:1ngS0ft@cluster0.ijjug.mongodb.net/ nodemon src/server.js",
+        "prod": "NODE_ENV=production MONGODB_URL=mongodb+srv://ingSoft:1ngS0ft@cluster0.ijjug.mongodb.net/ node src/server.js",
         "start-windows": "nodemon src/server.js"
     },
     "repository": {
